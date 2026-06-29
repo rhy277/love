@@ -1,0 +1,339 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no"><title>🐰恋爱动物人格测试🐰</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Comic Sans MS","幼圆",sans-serif;background:#ffe6f0;color:#d63384;min-height:100vh;display:flex;justify-content:center;align-items:center;position:relative;overflow-x:hidden;transition:background .2s,filter .2s}
+body.invert{filter:invert(1)}body.flash{animation:flashBg .08s infinite}body.dark{background:#000!important;color:red!important}
+@keyframes flashBg{0%{background:#fff}50%{background:#000}100%{background:#fff}}
+body.distort{filter:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='d'><feTurbulence baseFrequency='.08' numOctaves='3' result='turb'/><feDisplacementMap in='SourceGraphic' in2='turb' scale='35'/></filter></svg>#d")}
+#startPage{position:fixed;top:0;left:0;width:100%;height:100%;background:#ffe6f0;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:10;cursor:pointer;transition:opacity .5s}
+#startPage.hidden{opacity:0;pointer-events:none}
+.start-title{font-size:3.5rem;color:#d63384;text-shadow:3px 3px 0 #fff;margin-bottom:10px;animation:bounce 1.2s infinite alternate ease-in-out}
+.start-subtitle{font-size:1.5rem;color:#c71585;margin-bottom:30px;text-align:center}
+.start-img{width:auto;height:40vh;max-width:90%;object-fit:contain;animation:bounce 1.2s infinite alternate ease-in-out}
+@keyframes bounce{0%{transform:translateY(0) rotate(-2deg)}100%{transform:translateY(-15px) rotate(2deg)}}
+.container{width:95%;max-width:550px;background:#fff0f5;border-radius:30px;padding:25px 20px;box-shadow:0 10px 30px rgba(255,182,193,.6);text-align:center;position:relative;z-index:1;display:none;margin:20px auto;transition:background .3s,color .3s}
+.container.visible{display:block}
+.question-text{font-size:1.9rem;margin-bottom:30px;line-height:1.5;font-weight:bold;position:relative;z-index:2;transition:color .2s,transform .2s}
+.question-text.corrupt{color:red;letter-spacing:3px;text-shadow:2px 2px 0 #000;font-family:'Creepy','Bloody','Horror',cursive}
+.option-btn{display:block;width:100%;background:#ffb6c1;border:none;color:#fff;font-size:1.5rem;padding:18px 22px;margin:14px 0;border-radius:40px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.1);transition:transform .15s,background .2s;text-align:left;position:relative;z-index:2;-webkit-tap-highlight-color:transparent}
+.option-btn:active{transform:scale(.96);background:#ff8da1}
+.option-btn.bloody{background:#8b0000!important;color:#fcc}
+#corner-img{position:fixed;left:20px;bottom:30px;width:90px;height:auto;z-index:999;cursor:pointer;border-radius:20px;transition:all .3s}
+#corner-img.fullscreen{position:fixed;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:10000;border-radius:0}
+.overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:10001;display:none;justify-content:center;align-items:center;flex-direction:column}
+.overlay.active{display:flex}
+.system-dialog{position:fixed;top:20%;left:50%;transform:translate(-50%,0);background:#f0f0f0;border:3px solid #000;box-shadow:8px 8px 0 rgba(0,0,0,.6);padding:25px;z-index:10050;font-family:'Courier New',monospace;color:#000;display:none;width:320px;text-align:center;animation:dialogIn .3s ease-out}
+@keyframes dialogIn{0%{transform:translate(-50%,-30px);opacity:0}100%{transform:translate(-50%,0);opacity:1}}
+.system-dialog .dialog-title{background:#000080;color:#fff;padding:5px;margin:-25px -25px 15px;font-weight:bold}
+.system-dialog button{margin-top:15px;padding:8px 25px;background:#c0c0c0;border:2px solid #000;cursor:pointer;font-weight:bold}
+.call-screen{text-align:center;color:#fff}
+.call-screen .caller{font-size:6rem;font-weight:bold;margin-bottom:50px;font-family:'Impact','Arial Black',sans-serif;text-shadow:4px 4px 0 red}
+.call-buttons{display:flex;gap:60px;justify-content:center}
+.call-btn{width:120px;height:120px;border-radius:50%;font-size:2.5rem;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;font-weight:bold;transition:transform .2s}
+.call-btn:active{transform:scale(1.2)}.call-btn.reject{background:#e74c3c;color:#fff}.call-btn.accept{background:#2ecc71;color:#fff}
+.fullscreen-glitch{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0a;z-index:10002;display:none;justify-content:center;align-items:center;text-align:center;cursor:pointer;flex-direction:column;overflow:hidden}
+.fullscreen-glitch.active{display:flex}
+.glitch-text{font-size:6rem;font-weight:bold;font-family:'Creepy','Bloody',cursive;color:red;text-shadow:4px 4px 0 #000;animation:glitchAnim .1s infinite;letter-spacing:5px;z-index:2}
+@keyframes glitchAnim{0%{transform:translate(0)}20%{transform:translate(-5px,5px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-3px,-5px)}80%{transform:translate(3px,3px)}100%{transform:translate(0)}}
+.snow-bg::before{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4"><rect width="4" height="4" fill="%23fff" opacity=".5"/></svg>');animation:snow .05s infinite;pointer-events:none;z-index:1}
+@keyframes snow{0%{transform:translateY(0)}100%{transform:translateY(10px)}}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);z-index:10003;display:none;justify-content:center;align-items:center}
+.modal.active{display:flex}
+.modal-content{font-size:5rem;color:red;font-weight:bold;font-family:'Creepy','Bloody',cursive;text-shadow:3px 3px 0 #000;cursor:pointer;padding:30px;animation:pulse .5s infinite alternate}
+@keyframes pulse{0%{transform:scale(1);text-shadow:0 0 20px red}100%{transform:scale(1.15);text-shadow:0 0 60px darkred}}
+.bounce-img{position:fixed;z-index:10004;animation:bounceOut 2s forwards;cursor:pointer}
+@keyframes bounceOut{0%{transform:translateY(0) scale(1);opacity:1}30%{transform:translateY(-80px) scale(1.2);opacity:1}70%{transform:translateY(-200px) scale(.8);opacity:.8}100%{transform:translateY(-120vh) scale(0);opacity:0}}
+.red-popup-bg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.red-popup{position:absolute;background:rgba(200,0,0,.8);color:#fff;font-weight:bold;padding:8px 16px;border-radius:10px;font-size:1.3rem;box-shadow:0 0 15px red;animation:popupFloat 1.5s infinite alternate;font-family:'Creepy',cursive}
+@keyframes popupFloat{0%{transform:translateY(0)}100%{transform:translateY(-20px)}}
+.danmaku{position:fixed;top:20%;left:100%;font-size:3rem;color:red;font-weight:bold;font-family:'Creepy','Bloody',cursive;white-space:nowrap;z-index:10005;animation:danmakuMove 2s linear forwards}
+@keyframes danmakuMove{from{left:100%}to{left:-30%}}
+.why-flood{position:fixed;color:red;font-weight:bold;font-family:'Creepy','Bloody',cursive;z-index:10006;pointer-events:none;animation:floatWhy 1.5s infinite alternate;text-shadow:2px 2px 0 #000}
+@keyframes floatWhy{0%{transform:translateY(0) scale(1);opacity:.9}100%{transform:translateY(-30px) scale(1.4);opacity:1}}
+.hidden-terror{position:fixed;color:rgba(255,0,0,.9);font-weight:bold;font-size:2rem;z-index:10008;pointer-events:none;animation:fadeInOut 1.5s forwards;font-family:'Creepy',cursive;text-shadow:0 0 15px red}
+@keyframes fadeInOut{0%{opacity:0;transform:scale(.5)}15%{opacity:1;transform:scale(1.3)}85%{opacity:1}100%{opacity:0;transform:scale(1)}}
+.peek-eye{position:fixed;font-size:5rem;z-index:10009;animation:peekAnim 1s ease-in-out;pointer-events:none}
+@keyframes peekAnim{0%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1.8)}100%{opacity:0;transform:scale(1)}}
+.glitch-artifact{position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,rgba(255,0,0,.4) 0px,rgba(0,255,0,.4) 2px,rgba(0,0,255,.4) 4px);z-index:10010;pointer-events:none;display:none;animation:artifact .1s infinite}
+@keyframes artifact{0%{opacity:.9}50%{opacity:.5}100%{opacity:.9}}
+.text-inverted{display:inline-block;transform:scaleY(-1)}
+.text-shake{display:inline-block;animation:shakeText .1s infinite}
+@keyframes shakeText{0%{transform:translate(1px,0)}25%{transform:translate(-1px,1px)}50%{transform:translate(-1px,-1px)}75%{transform:translate(1px,-1px)}100%{transform:translate(0,0)}}
+.bsod{position:fixed;top:0;left:0;width:100%;height:100%;background:navy;color:#fff;font-family:'Courier New',monospace;z-index:10020;display:none;flex-direction:column;justify-content:center;align-items:center;padding:20px}
+.bsod.active{display:flex}
+.pupil{position:fixed;font-size:3rem;z-index:10030;pointer-events:none;transition:all .1s}
+</style></head><body>
+<div id="startPage" onclick="startQuiz()"><div class="start-title">🐰恋爱动物人格测试</div><div class="start-subtitle">这是一份关于恋爱习惯的轻松问卷。<br>务必要根据第一直觉选出答案哦。</div><img class="start-img" src="https://i.imgs.ovh/2026/06/29/ba19af475a2fb16588c94ac589c1c2c5.png" alt="bouncing rabbit"></div>
+<div class="container" id="quizContainer"><div id="app"></div></div>
+<img id="corner-img" src="https://i.imgs.ovh/2026/06/29/bfe09c42ff98886e8bf3bdae2fc5e964.png" alt="corner">
+<div id="callOverlay" class="overlay"><div class="call-screen"><div class="caller">别接</div><div class="call-buttons"><button class="call-btn reject" id="rejectBtn">拒绝</button><button class="call-btn accept" id="acceptBtn">接听</button></div></div></div>
+<div id="fullscreenGlitch" class="fullscreen-glitch snow-bg"><div class="glitch-text">我不是说了不要接吗？</div></div>
+<div id="redModal" class="modal"><div class="modal-content" id="modalRedText">我知道你是谁</div></div>
+<div id="glitchLayer" class="glitch-artifact"></div>
+<div id="sysDialog" class="system-dialog"><div class="dialog-title">系统错误</div><p id="sysDialogMsg">检测到异常行为。</p><button onclick="closeSysDialog()">确定</button></div>
+<div id="bsod" class="bsod"><div style="font-size:3rem;margin-bottom:20px">:(</div><div style="font-size:1.5rem">你的电脑出现问题，需要重启。</div><div style="margin-top:30px;font-size:1rem">错误代码:0x00000E9</div><button onclick="document.getElementById('bsod').classList.remove('active')" style="margin-top:30px;padding:10px 30px;background:gray;color:#fff;border:2px solid #fff;cursor:pointer">继续</button></div>
+<audio id="horrorAudio" preload="auto"><source src="https://www.soundjay.com/human/sounds/scream-01.mp3" type="audio/mpeg"></audio>
+<audio id="heartbeat" preload="auto"><source src="https://www.soundjay.com/human/sounds/heartbeat-01.mp3" type="audio/mpeg"></audio><script>
+const animalsEmoji={'牛':'🐮','兔':'🐰','犬':'🐶','猫':'🐱','猫头鹰':'🦉','狐':'🦊','蛇':'🐍','虎鲸':'🐋','狮子':'🦁'};
+const questions=[
+{text:"1. 和伴侣一起逛超市，你最喜欢的区域是？",answers:[{text:"生鲜蔬果，一起挑晚餐食材",animal:"牛"},{text:"零食货架，往推车里丢他爱吃的",animal:"兔"},{text:"熟食区，买完就能坐下来吃",animal:"犬"},{text:"日用品区，添置一些家里的东西",animal:"猫"}]},
+{text:"2. 伴侣说今晚加班，你通常的回复是？",answers:[{text:"“辛苦啦，我给你留饭。”",animal:"牛"},{text:"“大概几点？我等你。”",animal:"兔"},{text:"“到了给我发定位。”",animal:"犬"},{text:"不回复",animal:"猫"}]},
+{text:"3. 约会迟到一小时，伴侣还没来，你的第一反应是？",answers:[{text:"发消息问到哪里了",animal:"兔"},{text:"看看手机定位",animal:"犬"},{text:"坐着等，想着可能堵车了",animal:"牛"},{text:"翻他的社交动态，看有没有异常",animal:"猫头鹰"}]},
+{text:"4. 你最喜欢在什么时候触碰伴侣？",answers:[{text:"早上睡醒，头发乱乱的时候",animal:"兔"},{text:"公众场合，让所有人都知道我们是一对",animal:"狐"},{text:"他专注于做自己的事，没注意到我的时候",animal:"猫"},{text:"事后，他浑身无力只能被我抱着的时候",animal:"牛"}]},
+{text:"5. 你理想中的约会频率是？",answers:[{text:"一周见两三次，保持想念",animal:"牛"},{text:"天天都想见面",animal:"兔"},{text:"不固定，想见就见",animal:"猫"},{text:"我每天都在Ta附近等着",animal:"蛇"}]},
+{text:"6. 搬新家时，你最在意的是？",answers:[{text:"离伴侣的公司近不近",animal:"牛"},{text:"邻居是什么样的人",animal:"犬"},{text:"窗帘够不够厚",animal:"猫"},{text:"周边有没有他常去的地方",animal:"狐"}]},
+{text:"7. 你觉得恋爱中，什么最难忍受？",answers:[{text:"付出不被看见",animal:"牛"},{text:"突然的冷淡",animal:"兔"},{text:"有任何事瞒着我",animal:"猫头鹰"},{text:"他不怕失去我",animal:"狐"}]},
+{text:"8. 伴侣提出想要一些独处时间，你的回应是？",answers:[{text:"“好，需要多久？”",animal:"猫"},{text:"“是不是我烦到你了？”",animal:"兔"},{text:"“好的，但电话要接。”",animal:"犬"},{text:"“那我就在隔壁房间。”",animal:"蛇"}]},
+{text:"9. 你和伴侣一起看电影，你会主动选什么类型？",answers:[{text:"浪漫爱情",animal:"兔"},{text:"悬疑推理",animal:"狐"},{text:"心理惊悚",animal:"虎鲸"},{text:"真实犯罪纪录片",animal:"猫头鹰"}]},
+{text:"10. 伴侣出差回来了，你的欢迎方式是？",answers:[{text:"做一桌菜等他",animal:"牛"},{text:"去机场接他",animal:"兔"},{text:"先确认他手机电量剩多少",animal:"猫头鹰"},{text:"紧紧抱住他很久不松手",animal:"蛇"}]},
+{text:"11. 你查过伴侣的手机使用时间统计吗？",answers:[{text:"不知道有这个功能",animal:"牛"},{text:"偶尔好奇看看",animal:"兔"},{text:"每周看，重点看深夜时段",animal:"犬"},{text:"截图存档，按月比对",animal:"猫头鹰"}]},
+{text:"12. 伴侣说“我去洗澡”，你在这十五分钟里？",answers:[{text:"做自己的事",animal:"牛"},{text:"帮他准备睡衣",animal:"兔"},{text:"在门外偷窥",animal:"犬"},{text:"检查他的手机",animal:"猫头鹰"}]},
+{text:"13. 你翻过伴侣的实体私人物品吗？",answers:[{text:"从不",animal:"牛"},{text:"找东西时无意翻到过",animal:"兔"},{text:"偶尔，比如钱包或抽屉",animal:"犬"},{text:"经常翻看",animal:"猫头鹰"}]},
+{text:"14. 伴侣的情绪低落，你直觉是？",answers:[{text:"工作压力太大了",animal:"牛"},{text:"是不是我不够好",animal:"兔"},{text:"他是不是在隐瞒什么",animal:"犬"},{text:"我知道他所有情绪的原因",animal:"虎鲸"}],terrorHint:"你真的知道吗？"},
+{text:"15. 你的电脑或手机里，关于伴侣的资料包括？",answers:[{text:"一些照片和聊天记录",animal:"兔"},{text:"重要日期和喜好清单",animal:"牛"},{text:"他所有社交账号、密码、密保问题",animal:"犬"},{text:"以上全部，以及他家人朋友的联系方式",animal:"猫头鹰"}]},
+{text:"16. 你在社交平台上注册过小号吗？",answers:[{text:"从不",animal:"牛"},{text:"有一个工作号",animal:"狐"},{text:"有一个用来关注伴侣的号",animal:"犬"},{text:"不止一个。用来测试伴侣会不会对陌生人动心",animal:"狐"}]},
+{text:"17. 伴侣在你面前和你不认识的人通话，你通常会？",answers:[{text:"做自己的事",animal:"牛"},{text:"假装没在意，其实竖着耳朵听",animal:"兔"},{text:"走近一些，让对方听到我的存在",animal:"狮子"},{text:"记下通话时长，事后比对记录",animal:"猫头鹰"}]},
+{text:"18. 你问过伴侣“你最爱谁”这种问题吗？",answers:[{text:"问过，撒娇的时候",animal:"兔"},{text:"偶尔问，但不喜欢自己这样",animal:"猫"},{text:"经常，我需要反复确认他爱我",animal:"犬"},{text:"不问，我知道他的一切",animal:"虎鲸"}],terrorHint:"你确定吗？"},
+{text:"19. 你觉得爱一个人，可以做到什么程度？",answers:[{text:"为他改变自己",animal:"牛"},{text:"为他扫清一切障碍",animal:"兔"},{text:"为他去死",animal:"蛇"},{text:"为他活着",animal:"蛇"}]},
+{text:"20. 伴侣手机里有一个你没见过的联系人，名叫“别接”。你会？",answers:[{text:"直接问是谁",animal:"牛"},{text:"先观察，按兵不动",animal:"兔"},{text:"立刻打过去",animal:"犬"},{text:"记下号码，用自己的渠道查",animal:"猫头鹰"}],special:'call'},
+{text:"21. 你现在是一个人做这套题吗？",answers:[{text:"是",animal:"兔"},{text:"旁边有人",animal:"牛"},{text:"不确定。屏幕里的测试，也可能在测试我",animal:"猫"},{text:"我已经知道你在想什么了",animal:"虎鲸"}],terrorHint:"我看见了"},
+{text:"22. 你有没有怀疑过，你其实正在被某人暗中观察？",answers:[{text:"从不",animal:"牛"},{text:"偶尔有这种感觉",animal:"兔"},{text:"我知道有人在看我",animal:"猫头鹰"},{text:"我也在看着你",animal:"猫头鹰"}]},
+{text:"23. 你曾经搜索过自己的名字吗？",answers:[{text:"试过一两次",animal:"兔"},{text:"从没",animal:"牛"},{text:"定期搜，看有没有人提到我",animal:"犬"},{text:"不只搜自己。我搜过我、伴侣、他的前任、他同事的名字。",animal:"猫头鹰"}],special:'redText'},
+{text:"24. 你是否想过，如果伴侣失去行动能力，你的生活会变成什么样？",answers:[{text:"太可怕了",animal:"牛"},{text:"我会照顾他一辈子",animal:"兔"},{text:"他永远不会离开我了",animal:"狐"},{text:"这个问题我认真规划过",animal:"虎鲸"}],terrorHint:"你在计划什么？"},
+{text:"25. 你最想住进什么位置，才能更好地爱他？",answers:[{text:"同一个小区",animal:"牛"},{text:"同一层楼",animal:"兔"},{text:"同一间屋",animal:"猫"},{text:"同一具身体",animal:"虎鲸"}]},
+{text:"26. 你觉得自己正常吗？",answers:[{text:"挺正常的",animal:"牛"},{text:"偶尔不正常",animal:"兔"},{text:"正常人谁做这套题",animal:"猫"},{text:"我不需要正常",animal:"虎鲸"}],special:'glitchPopup'},
+{text:"27. 你是否曾在某个深夜，对着镜子问过自己“你到底想要什么”？",answers:[{text:"有过，没问出答案",animal:"兔"},{text:"问过，然后更迷茫",animal:"猫"},{text:"问过。镜子里的我回答了",animal:"蛇"},{text:"不问。答案在别人那里",animal:"犬"}]},
+{text:"28. 童年时期，你最缺的是什么？",answers:[{text:"被看见",animal:"兔"},{text:"被肯定",animal:"牛"},{text:"安全感",animal:"犬"},{text:"控制权",animal:"虎鲸"}],terrorHint:"所以你变成了现在这样"},
+{text:"29. 你觉得自己需要被爱吗？",answers:[{text:"需要",animal:"牛"},{text:"不确定",animal:"兔"},{text:"不需要",animal:"蛇"},{text:"我只需要爱他",animal:"虎鲸"}]},
+{text:"30. 你觉得“一起死”这件事？",answers:[{text:"太极端了，不能接受",animal:"牛"},{text:"可以理解，但不会做",animal:"兔"},{text:"如果活着不能在一起，这是最后的退路",animal:"虎鲸"},{text:"这是让爱圆满的唯一道路",animal:"猫头鹰"}],terrorHint:"你真的这么想吗？"},
+{text:"31. 你愿意为了爱人付出一切吗？",answers:[{text:"愿意",animal:null},{text:"不愿意",animal:null}],special:'forceYes'}
+];let animalScores={},currentStep=0,cornerClickCount=0,cornerScale=1;
+const startPage=document.getElementById('startPage'),quizContainer=document.getElementById('quizContainer'),app=document.getElementById('app');
+const cornerImg=document.getElementById('corner-img'),callOverlay=document.getElementById('callOverlay'),fullscreenGlitch=document.getElementById('fullscreenGlitch');
+const redModal=document.getElementById('redModal'),modalRedText=document.getElementById('modalRedText'),glitchLayer=document.getElementById('glitchLayer');
+const sysDialog=document.getElementById('sysDialog'),sysDialogMsg=document.getElementById('sysDialogMsg'),bsod=document.getElementById('bsod');
+const horrorAudio=document.getElementById('horrorAudio'),heartbeat=document.getElementById('heartbeat');
+let recentEffects=[],pupilEl=null;
+
+function playSound(audio=horrorAudio){audio.currentTime=0;audio.play().catch(()=>{});}
+function getProbability(){if(currentStep<5)return 0;const start=5,end=30;return Math.min(0.5+((currentStep-start)/(end-start))*0.5,1);}
+
+// 25种特效（去掉关机，保留24种，补充一个“选项颤抖”）
+const horrorEffects=[
+  {id:'invert',fn:()=>{document.body.classList.add('invert');setTimeout(()=>document.body.classList.remove('invert'),200)}},
+  {id:'flash',fn:()=>{document.body.classList.add('flash');setTimeout(()=>document.body.classList.remove('flash'),250)}},
+  {id:'artifact',fn:()=>{glitchLayer.style.display='block';setTimeout(()=>glitchLayer.style.display='none',250)}},
+  {id:'distort',fn:()=>{document.body.classList.add('distort');setTimeout(()=>document.body.classList.remove('distort'),300)}},
+  {id:'dark',fn:()=>{document.body.style.background='#110000';setTimeout(()=>document.body.style.background='',500)}},
+  {id:'invertText',fn:invertRandomText},{id:'shakeText',fn:shakeRandomText},{id:'corrupt',fn:corruptQuestionText},
+  {id:'float',fn:()=>showFloatingTerror(['我看见你了','你在说谎','逃吧','别回头','他都知道了','救救我','好疼','融为一体'][Math.floor(Math.random()*8)])},
+  {id:'eye',fn:showPeekingEye},
+  {id:'bigEye',fn:()=>{let e=document.createElement('div');e.className='hidden-terror';e.textContent='👁️';e.style.fontSize='8rem';e.style.top='40%';e.style.left='45%';document.body.appendChild(e);setTimeout(()=>e.remove(),800)}},
+  {id:'sysWarn',fn:()=>showSysError(['摄像头已启动','麦克风正在录音','位置已锁定','数据上传中...','警告：异常人格特征','不要回头','自毁倒计时'][Math.floor(Math.random()*7)])},
+  {id:'bsod',fn:()=>{bsod.classList.add('active');setTimeout(()=>bsod.classList.remove('active'),1200)}},
+  {id:'bloody',fn:()=>{document.querySelectorAll('.option-btn').forEach(b=>b.classList.add('bloody'));setTimeout(()=>document.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('bloody')),400)}},
+  {id:'vignette',fn:()=>{document.body.style.boxShadow='inset 0 0 150px red';setTimeout(()=>document.body.style.boxShadow='',600)}},
+  {id:'shakeScreen',fn:()=>{document.body.style.transform='translate(4px,0)';setTimeout(()=>document.body.style.transform='',100)}},
+  {id:'redTextPop',fn:()=>{let el=document.createElement('div');el.style.cssText='position:fixed;top:20%;left:50%;transform:translate(-50%);font-size:4rem;color:red;font-family:Creepy,cursive;z-index:10030;pointer-events:none;animation:fadeInOut 1.5s forwards';el.textContent='看着我';document.body.appendChild(el);setTimeout(()=>el.remove(),1500)}},
+  {id:'textDissolve',fn:()=>{let qt=document.querySelector('.question-text');if(qt){qt.style.transition='opacity 2s';qt.style.opacity='0';setTimeout(()=>{qt.style.opacity='1'},1500)}}},
+  {id:'optionSwap',fn:()=>{let btns=document.querySelectorAll('.option-btn');if(btns.length>1){let orig=btns[0].textContent;btns[0].textContent='别选这个';setTimeout(()=>{btns[0].textContent=orig},1000)}}},
+  {id:'fakeProgress',fn:()=>{let bar=document.createElement('div');bar.style.cssText='position:fixed;top:10px;left:50%;transform:translate(-50%);width:80%;height:10px;background:red;z-index:10050;animation:progressBar 2s forwards';document.body.appendChild(bar);setTimeout(()=>bar.remove(),2200)}},
+  {id:'heartbeat',fn:()=>{playSound(heartbeat);let el=document.createElement('div');el.textContent='💓';el.style.cssText='position:fixed;bottom:20px;right:20px;font-size:3rem;animation:pulse .5s infinite';document.body.appendChild(el);setTimeout(()=>el.remove(),3000)}},
+  {id:'staticNoise',fn:()=>{glitchLayer.style.display='block';playSound(horrorAudio);setTimeout(()=>glitchLayer.style.display='none',500)}},
+  {id:'pupilFollow',fn:()=>{if(!pupilEl){pupilEl=document.createElement('div');pupilEl.className='pupil';pupilEl.textContent='👁️';document.body.appendChild(pupilEl)}document.addEventListener('mousemove',followMouse);setTimeout(()=>{document.removeEventListener('mousemove',followMouse);if(pupilEl)pupilEl.remove();pupilEl=null},4000)}},
+  {id:'whisper',fn:()=>{let txts=['你听到了吗','好吵','闭嘴'];let el=document.createElement('div');el.className='hidden-terror';el.textContent=txts[Math.floor(Math.random()*3)];el.style.fontSize='1.2rem';el.style.bottom='10%';el.style.left='10%';document.body.appendChild(el);setTimeout(()=>el.remove(),1200)}},
+  {id:'reverseScroll',fn:()=>{window.scrollBy(0,50);setTimeout(()=>window.scrollBy(0,-50),200)}},
+  {id:'btnShake',fn:()=>{let btns=document.querySelectorAll('.option-btn');if(btns.length){btns[Math.floor(Math.random()*btns.length)].classList.add('text-shake');setTimeout(()=>document.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('text-shake')),500)}}}
+];
+
+function followMouse(e){if(pupilEl){pupilEl.style.left=e.clientX+'px';pupilEl.style.top=e.clientY+'px';}}
+
+function getRandomEffect(){
+  let pool=horrorEffects.filter(e=>!recentEffects.includes(e.id));
+  if(pool.length<6) pool=horrorEffects; // 若可选太少则全部解禁
+  let chosen=pool[Math.floor(Math.random()*pool.length)];
+  recentEffects.push(chosen.id);
+  if(recentEffects.length>12) recentEffects.shift(); // 保留最近12个，降低重复
+  return chosen.fn;
+}
+
+function triggerRandomHorror(){
+  let prob=getProbability();
+  if(Math.random()<prob){
+    let count=1+Math.floor(Math.random()*(prob<0.8?2:3));
+    for(let i=0;i<count;i++){
+      let fn=getRandomEffect();
+      try{fn();}catch(e){}
+      if(Math.random()<0.4) playSound(horrorAudio);
+    }
+  }
+}
+
+function showPeekingEye(){
+  let eye=document.createElement('div');eye.className='peek-eye';eye.textContent='👁️';
+  eye.style.top=Math.random()*80+'%';eye.style.left=Math.random()*80+'%';
+  document.body.appendChild(eye);setTimeout(()=>eye.remove(),1200);
+}
+
+function invertRandomText(){
+  const texts=document.querySelectorAll('.question-text,.option-btn');
+  if(texts.length===0)return;
+  let el=texts[Math.floor(Math.random()*texts.length)];
+  let orig=el.innerHTML,words=orig.split(' ');if(!words.length)return;
+  let idx=Math.floor(Math.random()*words.length);
+  words[idx]=`<span class="text-inverted">${words[idx]}</span>`;
+  el.innerHTML=words.join(' ');
+  setTimeout(()=>{el.innerHTML=orig},800);
+}
+
+function shakeRandomText(){
+  const texts=document.querySelectorAll('.question-text,.option-btn');
+  if(texts.length===0)return;
+  let el=texts[Math.floor(Math.random()*texts.length)];
+  el.classList.add('text-shake');setTimeout(()=>el.classList.remove('text-shake'),500);
+}
+
+function corruptQuestionText(){
+  const qt=document.querySelector('.question-text');
+  if(!qt)return;qt.classList.add('corrupt');setTimeout(()=>qt.classList.remove('corrupt'),400);
+}
+
+function showSysError(msg){
+  sysDialogMsg.textContent=msg;sysDialog.style.display='block';
+  setTimeout(()=>{if(sysDialog.style.display==='block')sysDialog.style.display='none'},2000);
+}
+
+window.closeSysDialog=function(){sysDialog.style.display='none';};
+
+function showFloatingTerror(text){
+  let el=document.createElement('div');el.className='hidden-terror';
+  el.textContent=text;el.style.top=(15+Math.random()*70)+'%';el.style.left=(10+Math.random()*80)+'%';
+  document.body.appendChild(el);el.addEventListener('animationend',()=>el.remove());
+}
+
+// 原有逻辑保持不变，但去掉了假关机，精简了部分回调
+function startQuiz(){
+  startPage.classList.add('hidden');
+  setTimeout(()=>{startPage.style.display='none';quizContainer.classList.add('visible');showQuestion(0)},400);
+}
+
+function showQuestion(index){
+  resetEffects();if(index>=31){showResult();return;}
+  currentStep=index;
+  const q=questions[index];
+  let html=`<div class="question-text">${q.text}</div>`;
+  q.answers.forEach((ans,i)=>{html+=`<button class="option-btn" onclick="handleAnswer(${index},${i})">${ans.text}</button>`});
+  app.innerHTML=html;
+  if(q.special==='glitchPopup')addRedPopups();
+  if(q.terrorHint)setTimeout(()=>showFloatingTerror(q.terrorHint),800);
+  triggerRandomHorror();
+  if(currentStep>=5&&Math.random()<0.6)setTimeout(triggerRandomHorror,600);
+}
+
+function resetEffects(){
+  document.body.classList.remove('invert','flash','distort');document.body.style.background='';
+  glitchLayer.style.display='none';
+  document.querySelectorAll('.why-flood,.bounce-img,.zoom-in-img,.danmaku,.hidden-terror,.red-popup-bg,.peek-eye').forEach(e=>e.remove());
+  document.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('bloody','text-shake'));
+}
+
+function addRedPopups(){
+  const bg=document.createElement('div');bg.className='red-popup-bg';
+  const msgs=['正常？','不对劲','哈哈','测试','监视','谁在看','说谎','我不正常','救命','逃','你有罪','认命','疼'];
+  for(let i=0;i<15;i++){
+    let popup=document.createElement('div');popup.className='red-popup';
+    popup.textContent=msgs[i%msgs.length];
+    popup.style.top=(5+Math.random()*80)+'%';popup.style.left=(2+Math.random()*90)+'%';
+    popup.style.animationDelay=Math.random()*2+'s';
+    bg.appendChild(popup);
+  }
+  quizContainer.appendChild(bg);
+}
+
+function handleAnswer(qIndex,aIndex){
+  const q=questions[qIndex],ans=q.answers[aIndex];
+  if(qIndex===30){handleQ31(ans,aIndex);return;}
+  if(ans.animal)animalScores[ans.animal]=(animalScores[ans.animal]||0)+1;
+  triggerRandomHorror();
+  applyPostAnswerEffect(qIndex,ans);
+  if(qIndex===19){showCallOverlay(()=>{currentStep++;showQuestion(currentStep)});}
+  else if(qIndex===22){showRedModal(()=>{currentStep++;showQuestion(currentStep)});}
+  else if(qIndex===25){showDanmaku('我也这么觉得',()=>{currentStep++;showQuestion(currentStep)});}
+  else{currentStep++;showQuestion(currentStep);}
+}
+
+function applyPostAnswerEffect(qIndex,ans){
+  if(qIndex===13&&ans.animal==='虎鲸'){setTimeout(()=>showFloatingTerror('你知道得太多了'),500);}
+  if(qIndex===20&&ans.text.includes('不确定')){setTimeout(()=>showFloatingTerror('我在看着你'),800);}
+  if(qIndex===21&&ans.text.includes('我也在')){showPeekingEye();showSysError('摄像头权限已被获取。');playSound();}
+  if(qIndex===29&&(ans.text.includes('退路')||ans.text.includes('圆满'))){
+    document.body.style.background='#1a0000';setTimeout(()=>document.body.style.background='',400);
+    showFloatingTerror('你确定吗？');showSysError('自毁倾向警告。');
+    bsod.classList.add('active');setTimeout(()=>bsod.classList.remove('active'),1000);
+  }
+  if(qIndex===7&&ans.animal==='蛇'){setTimeout(()=>showFloatingTerror('我会等你'),600);}
+  if(qIndex===12&&ans.animal==='猫头鹰'){setTimeout(()=>{showSysError('私人空间已被扫描');playSound()},700);}
+  if(qIndex===15&&ans.text.includes('小号测试')){setTimeout(()=>showFloatingTerror('真有趣'),500);}
+  if(qIndex===24&&ans.text.includes('同一具身体')){document.body.style.background='#200';setTimeout(()=>document.body.style.background='',300);showFloatingTerror('融为一体');}
+}
+
+function showCallOverlay(cb){callOverlay.classList.add('active');
+  document.getElementById('rejectBtn').onclick=()=>{callOverlay.classList.remove('active');cb();};
+  document.getElementById('acceptBtn').onclick=()=>{callOverlay.classList.remove('active');fullscreenGlitch.classList.add('active');playSound();
+    fullscreenGlitch.onclick=()=>{fullscreenGlitch.classList.remove('active');fullscreenGlitch.onclick=null;showSysError('通话已中断。对方仍在监听。');cb();}};
+}
+
+function showRedModal(cb){redModal.classList.add('active');
+  modalRedText.onclick=()=>{redModal.classList.remove('active');let img=document.createElement('img');img.src='https://i.imgs.ovh/2026/06/29/9f8c54786f524bebd60100c68d2e571e.png';img.className='bounce-img';img.style.top='40%';img.style.left='35%';img.style.width='200px';document.body.appendChild(img);img.addEventListener('animationend',()=>{img.remove();cb();});};
+}
+
+function showDanmaku(text,cb){let d=document.createElement('div');d.className='danmaku';d.textContent=text;document.body.appendChild(d);d.addEventListener('animationend',()=>{d.remove();cb();});}
+
+function handleQ31(ans,aIndex){
+  if(ans.text==='愿意'){showResultImage();return;}
+  if(!window.q31Count)window.q31Count=0;
+  window.q31Count++;
+  const btns=document.querySelectorAll('.option-btn'),yes=btns[0],no=btns[1];
+  if(window.q31Count<5){
+    no.style.transform=`scale(${Math.max(0.1,1-window.q31Count*0.22)})`;
+    yes.style.transform=`scale(${1+window.q31Count*0.35})`;
+    for(let i=0;i<30;i++){let s=document.createElement('div');s.textContent='为什么？';s.className='why-flood';s.style.top=Math.random()*90+'%';s.style.left=Math.random()*90+'%';s.style.fontSize=(2+Math.random()*3)+'rem';document.body.appendChild(s);setTimeout(()=>s.remove(),2000)}
+    triggerRandomHorror();showSysError('选项冲突。');
+  }else if(window.q31Count===5){
+    document.body.style.background='#0a0000';quizContainer.style.background='#1a0000';quizContainer.style.color='#fff';
+    no.style.display='none';yes.style.transform='scale(3)';yes.style.background='#b30000';yes.style.fontWeight='bold';
+    for(let i=0;i<100;i++){let s=document.createElement('div');s.textContent='为什么？';s.className='why-flood';s.style.top=Math.random()*100+'%';s.style.left=Math.random()*100+'%';s.style.fontSize=(2+Math.random()*5)+'rem';document.body.appendChild(s);setTimeout(()=>s.remove(),3500)}
+    document.body.classList.add('invert');setTimeout(()=>document.body.classList.remove('invert'),1200);
+    showSysError('拒绝无效。请重新选择。');bsod.classList.add('active');setTimeout(()=>bsod.classList.remove('active'),1500);playSound();
+    yes.onclick=()=>{showResultImage();};
+    no.onclick=null;
+  }
+}
+
+function showResultImage(){
+  document.querySelectorAll('.why-flood').forEach(e=>e.remove());
+  document.body.style.background='#000';quizContainer.style.display='none';
+  let img=document.createElement('img');img.src='https://i.imgs.ovh/2026/06/29/ba19af475a2fb16588c94ac589c1c2c5.png';
+  img.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(1);width:80%;max-width:400px;z-index:10010;cursor:pointer;transition:transform .3s';
+  img.onclick=()=>{img.remove();quizContainer.style.display='block';document.body.style.background='';showResult();};
+  document.body.appendChild(img);
+  let scale=1;setInterval(()=>{scale=scale===1?1.07:1;img.style.transform=`translate(-50%,-50%) scale(${scale})`},600);
+}
+
+function showResult(){
+  resetEffects();let maxAnimal='',maxScore=0;
+  for(let[a,s]of Object.entries(animalScores)){if(s>maxScore){maxScore=s;maxAnimal=a}}
+  if(!maxAnimal)maxAnimal='兔';
+  let emoji=animalsEmoji[maxAnimal]||'❓';
+  app.innerHTML=`<div style="font-size:2.5rem;margin-top:20px">你的恋爱动物是</div><div style="font-size:7rem;margin:20px 0">${emoji}</div><div style="font-size:3.5rem;font-weight:bold">${maxAnimal}</div><div style="font-size:1.5rem;margin-top:50px">感谢您参与测试，唐臣公寓期待您的入住</div><button class="option-btn" onclick="location.reload()" style="text-align:center">再测一次</button>`;
+  quizContainer.style.background='#fff0f5';quizContainer.style.color='#d63384';quizContainer.style.display='block';document.body.style.background='#ffe6f0';
+  if(Math.random()<0.8){setTimeout(showPeekingEye,1500);setTimeout(()=>showFloatingTerror('你以为结束了吗？'),3000);playSound();}
+}
+
+cornerImg.addEventListener('click',()=>{cornerClickCount++;
+  if(cornerClickCount===1)cornerImg.src='https://i.imgs.ovh/2026/06/29/9f8c54786f524bebd60100c68d2e571e.png';
+  else if(cornerClickCount>=4){
+    if(!cornerImg.classList.contains('fullscreen')){cornerImg.src='https://i.imgs.ovh/2026/06/29/56f95bd15d1ae9d7edc0d29713f4b5e3.png';cornerImg.classList.add('fullscreen');cornerScale=1;}
+    else{cornerScale+=0.5;cornerImg.style.transform=`scale(${cornerScale})`;if(cornerScale>=5){cornerImg.style.display='none';document.body.style.background='#000';}}
+  }
+});
+</script></body></html>
