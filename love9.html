@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
+    <title>🐰 恋爱动物人格测试</title>
+    <style>
+        :root { --blood: #8b0000; --pink: #ffb6c1; --dark: #1a0000; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: "Comic Sans MS","幼圆",sans-serif;
+            background:#ffe6f0; color:#d63384; min-height:100vh; min-height:-webkit-fill-available;
+            display:flex; justify-content:center; align-items:center; overflow-x:hidden;
+            transition:background .6s; touch-action:pan-y;
+            -webkit-tap-highlight-color:transparent;
+            -webkit-user-select:none; user-select:none;
+        }
+        body.dark-bg { background:#1a0000!important; }
+        body.deeper-bg { background:#050000!important; }
+        body.flash-bg { animation:flashBg .4s infinite; }
+        body.breath-bg { animation:breath 4s infinite ease-in-out; }
+        @keyframes flashBg { 0%,100%{background:#0a0000} 50%{background:#3a0000} }
+        @keyframes breath { 0%,100%{background:#050000} 50%{background:#150000} }
+
+        .uncanny-text { letter-spacing:0.08em; word-spacing:0.15em; transition:letter-spacing 1.5s; }
+        .uncanny-text.phase2 { letter-spacing:0.18em; word-spacing:0.3em; }
+        .uncanny-text.phase3 { letter-spacing:0.35em; word-spacing:0.5em; text-shadow:1px 1px 0 rgba(139,0,0,0.3), -1px -1px 0 rgba(139,0,0,0.2); }
+        .text-bleed { animation:textBleed 3s infinite ease-in-out; }
+        @keyframes textBleed { 0%,100%{text-shadow:0 0 0 transparent} 30%{text-shadow:0 0 4px rgba(180,0,0,0.5)} 60%{text-shadow:0 0 8px rgba(140,0,0,0.7)} }
+
+        #startPage { position:fixed; top:0; left:0; width:100%; height:100%; background:#ffe6f0; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:10; transition:opacity .5s; padding:20px; }
+        #startPage.hidden { opacity:0; pointer-events:none; }
+        .start-title { font-size:clamp(2rem,8vw,3.5rem); color:#d63384; text-shadow:3px 3px 0 #fff; animation:bounce 1.2s infinite alternate; text-align:center; }
+        .start-subtitle { font-size:clamp(1rem,4vw,1.5rem); color:#c71585; margin-bottom:20px; text-align:center; line-height:1.6; }
+        .start-img { height:30vh; max-width:90%; object-fit:contain; animation:bounce 1.2s infinite alternate; }
+        .start-btn { padding:14px 50px; font-size:clamp(1.2rem,5vw,1.8rem); background:#d63384; color:#fff; border:none; border-radius:50px; cursor:pointer; box-shadow:0 6px 15px rgba(0,0,0,0.2); margin-top:20px; transition:background .3s; -webkit-tap-highlight-color:transparent; }
+        @keyframes bounce { 0%{transform:translateY(0) rotate(-2deg)} 100%{transform:translateY(-15px) rotate(2deg)} }
+
+        .container { width:92%; max-width:500px; background:#fff0f5; border-radius:30px; padding:20px 15px; box-shadow:0 10px 30px rgba(255,182,193,.6); text-align:center; position:relative; z-index:1; display:none; margin:15px auto; transition:background .6s,box-shadow .6s; }
+        .container.visible { display:block; }
+        .container.ominous { box-shadow:0 10px 40px rgba(139,0,0,0.5); }
+
+        .progress-wrap { height:8px; background:#ffe0e8; border-radius:20px; margin-bottom:15px; overflow:hidden; }
+        .progress-fill { height:100%; width:0%; background:#ff9a9e; border-radius:20px; transition:width .4s, background .5s; }
+
+        .question-text { font-size:clamp(1.1rem,4.5vw,1.7rem); margin-bottom:20px; line-height:1.5; font-weight:bold; word-break:break-word; position:relative; }
+        .question-text.blood-bleed { background:linear-gradient(to right,transparent,rgba(139,0,0,0.12) 50%,transparent); background-size:200% 100%; animation:bloodBleed 1s forwards; }
+        @keyframes bloodBleed { 0%{background-position:-100% 0} 100%{background-position:100% 0} }
+
+        .option-btn { display:block; width:100%; background:#ffb6c1; color:#fff; font-size:clamp(0.9rem,4vw,1.3rem); padding:14px 12px; margin:12px 0; border:none; border-radius:40px; cursor:pointer; text-align:left; transition:.25s; min-height:50px; touch-action:manipulation; position:relative; overflow:hidden; -webkit-tap-highlight-color:rgba(139,0,0,0.3); }
+        .option-btn:active { transform:scale(0.97); }
+        .option-btn.selected { background:#e87890; box-shadow:0 0 18px rgba(200,0,0,0.5); }
+        .option-btn.bloody { background:#6b0000!important; color:#fcc; }
+        @keyframes shakeBtn { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+
+        .confirm-btn { display:none; width:80%; margin:20px auto 0; background:#d63384; color:#fff; padding:14px; border:none; border-radius:40px; font-weight:bold; letter-spacing:2px; cursor:pointer; min-height:48px; font-size:1.1rem; -webkit-tap-highlight-color:transparent; }
+
+        #fxCanvas { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9990; display:none; }
+        .crt-overlay { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9989; background:linear-gradient(rgba(18,16,16,0.1) 50%,rgba(0,0,0,0.25) 50%); background-size:100% 4px; animation:crtScan .5s infinite; display:none; }
+        .crt-overlay.active { display:block; }
+        @keyframes crtScan { 0%{background-position:0 0} 100%{background-position:0 8px} }
+        .rgb-shift .option-btn { text-shadow:3px 0 red, -3px 0 blue; color:#ffcccc!important; }
+        .win95-window { position:absolute; background:#c0c0c0; border:2px solid #000; box-shadow:2px 2px 0 #fff inset,-2px -2px 0 #808080 inset; font-family:'Microsoft Sans Serif',sans-serif; font-size:12px; pointer-events:auto; z-index:9995; min-width:120px; cursor:pointer; }
+        .win95-title { background:#000080; color:#fff; padding:2px 8px; font-weight:bold; }
+        .win95-body { padding:10px; color:#000; background:#fff; }
+        .collage-text { position:fixed; font-family:Impact,sans-serif; color:red; z-index:9991; pointer-events:none; text-shadow:1px 1px 0 #000; animation:collageFloat 3s infinite alternate; }
+        @keyframes collageFloat { 0%{transform:translate(0,0) rotate(0deg)} 100%{transform:translate(8px,-8px) rotate(3deg)} }
+
+        .hidden-terror { position:fixed; color:rgba(255,0,0,.9); font-family:Impact,sans-serif; z-index:10008; pointer-events:none; animation:fadeInOut 2s forwards; text-shadow:0 0 15px red; max-width:90vw; font-size:clamp(1.2rem,5vw,2rem); }
+        @keyframes fadeInOut { 0%{opacity:0;transform:scale(.5)} 20%{opacity:1;transform:scale(1.3)} 80%{opacity:1} 100%{opacity:0;transform:scale(1)} }
+        .danmaku { position:fixed; top:15%; left:100%; font-size:clamp(1.5rem,6vw,3rem); color:red; font-family:Impact,sans-serif; white-space:nowrap; z-index:10005; animation:danmakuMove 2.5s linear forwards; }
+        @keyframes danmakuMove { from{left:100%} to{left:-30%} }
+        .fog-layer { position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at center,rgba(139,0,0,0.35),rgba(139,0,0,0.08)); pointer-events:none; z-index:9997; opacity:0; transition:opacity .8s; }
+        .fog-layer.active { opacity:1; }
+        #corner-img { position:fixed; left:10px; bottom:20px; width:clamp(50px,12vw,80px); z-index:999; cursor:pointer; border-radius:20px; transition:transform .4s; }
+        .call-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.95); z-index:10001; display:none; justify-content:center; align-items:center; flex-direction:column; }
+        .call-overlay.active { display:flex; }
+        .call-text { font-size:clamp(3rem,15vw,6rem); font-family:Impact,sans-serif; color:red; }
+        .call-btns { display:flex; gap:25px; margin-top:30px; }
+        .call-btn { width:90px; height:90px; border-radius:50%; font-size:1.6rem; border:none; font-weight:bold; color:#fff; cursor:pointer; }
+        .call-btn.reject { background:#e74c3c; } .call-btn.accept { background:#2ecc71; }
+        .fullscreen-glitch { position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:10002; display:none; justify-content:center; align-items:center; cursor:pointer; }
+        .fullscreen-glitch.active { display:flex; }
+        .glitch-text { font-family:Impact,sans-serif; color:red; font-size:3rem; animation:zoomIn 2s forwards; text-align:center; padding:20px; }
+        @keyframes zoomIn { from{transform:scale(1)} to{transform:scale(2.5)} }
+        .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.9); z-index:10003; display:none; justify-content:center; align-items:center; }
+        .modal.active { display:flex; }
+        .modal-content { font-size:clamp(2.5rem,10vw,5rem); font-family:Impact,sans-serif; color:red; text-shadow:0 0 25px red; cursor:pointer; animation:pulse .5s infinite; text-align:center; }
+        @keyframes pulse { 0%{transform:scale(1)} 100%{transform:scale(1.15)} }
+        .bounce-img { position:fixed; z-index:10004; animation:bounceOut 2s forwards; max-width:50vw; }
+        @keyframes bounceOut { 0%{transform:translateY(0) scale(1)} 100%{transform:translateY(-120vh) scale(0)} }
+        .peek-eye { position:fixed; font-size:clamp(3rem,12vw,5rem); z-index:10009; animation:peekAnim 1s ease-in-out; pointer-events:none; }
+        @keyframes peekAnim { 0%{opacity:0;transform:scale(0)} 50%{opacity:1;transform:scale(1.8)} 100%{opacity:0} }
+        .why-flood { position:fixed; color:red; font-family:Impact,sans-serif; z-index:10006; pointer-events:none; animation:floatWhy 1.5s infinite alternate; text-shadow:2px 2px 0 #000; }
+        @keyframes floatWhy { 0%{transform:translateY(0) scale(1);opacity:.9} 100%{transform:translateY(-30px) scale(1.4);opacity:1} }
+        .monitor-mark { position:fixed; top:10px; right:10px; color:red; font-size:0.7rem; z-index:9999; opacity:0.7; font-family:monospace; animation:fade 2s infinite; pointer-events:none; }
+        @keyframes fade { 0%,100%{opacity:0.5} 50%{opacity:0.9} }
+        @keyframes shakeScreen { 0%,100%{transform:translate(0)} 25%{transform:translate(-4px,2px)} 75%{transform:translate(4px,-2px)} }
+        @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+        @keyframes slideOut{from{transform:translateX(0)}to{transform:translateX(100%)}}
+        .sms-popup {
+          position:fixed;bottom:80px;right:10px;background:#fff;border:1px solid red;
+          border-radius:10px;padding:10px;font-size:0.9rem;color:red;z-index:10070;
+          animation:slideIn .3s forwards; max-width:180px;
+        }
+    </style>
+</head>
+<body>
+    <div id="startPage">
+        <div class="start-title">🐰 恋爱动物人格测试</div>
+        <div class="start-subtitle">一份关于恋爱习惯的轻松问卷。<br>请根据第一直觉选出答案。</div>
+        <img class="start-img" src="https://i.imgs.ovh/2026/06/29/ba19af475a2fb16588c94ac589c1c2c5.png" alt="bunny">
+        <button class="start-btn" onclick="startQuiz()">👉 开始测试 👈</button>
+    </div>
+    <div class="container" id="quizContainer">
+        <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+        <div id="app"></div>
+        <button class="confirm-btn" id="confirmBtn" onclick="confirmAnswer()">确 定</button>
+    </div>
+    <canvas id="fxCanvas"></canvas>
+    <div id="crtLayer" class="crt-overlay"></div>
+    <div id="fogLayer" class="fog-layer"></div>
+    <img id="corner-img" src="https://i.imgs.ovh/2026/06/29/bfe09c42ff98886e8bf3bdae2fc5e964.png" alt="corner">
+    <div id="callOverlay" class="call-overlay"></div>
+    <div id="fullscreenGlitch" class="fullscreen-glitch"><div class="glitch-text">我不是说了不要接吗？</div></div>
+    <div id="redModal" class="modal"><div class="modal-content" id="modalRedText">我知道你是谁</div></div>
+    <audio id="bgmAudio" loop preload="auto" crossorigin="anonymous" src="https://raw.githubusercontent.com/anars/blank-audio/master/4-seconds-of-silence.mp3"></audio>
+    <audio id="phoneRing" preload="auto" crossorigin="anonymous" src="https://assets.mixkit.co/sfx/mp3preview/mixkit-telephone-ringtone-1296.mp3"></audio>
+    <audio id="smsSound" preload="auto" crossorigin="anonymous" src="https://assets.mixkit.co/sfx/mp3preview/mixkit-notification-alert-1145.mp3"></audio>
+    <audio id="footstep" preload="auto" crossorigin="anonymous" src="https://assets.mixkit.co/sfx/mp3preview/mixkit-horror-footsteps-1708.mp3"></audio>
+    <audio id="whisperAudio" preload="auto" crossorigin="anonymous" src="https://assets.mixkit.co/sfx/mp3preview/mixkit-ghost-whisper-1720.mp3"></audio>
+    <audio id="scratchAudio" preload="auto" crossorigin="anonymous" src="https://assets.mixkit.co/sfx/mp3preview/mixkit-metal-scratch-1698.mp3"></audio>
+    <!-- 下面依次粘贴第二、三、四段脚本 -->
+<script>
+const fxCanvas = document.getElementById('fxCanvas');
+const ctx = fxCanvas.getContext('2d');
+const crtLayer = document.getElementById('crtLayer');
+const yanderePool = ['我喜欢你','我爱你','看着你','永远一起','别离开','你是我的','不要逃','在一起','注视着你','逃不掉的'];
+
+function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function resizeCanvas(){ fxCanvas.width=window.innerWidth; fxCanvas.height=window.innerHeight; }
+window.addEventListener('resize',resizeCanvas);
+resizeCanvas();
+
+/* 特效1：水平平铺重复红字 - 全屏 */
+function effectHorizontalRepeat(){
+    fxCanvas.style.display='block';
+    const w=fxCanvas.width, h=fxCanvas.height;
+    ctx.fillStyle='#000'; ctx.fillRect(0,0,w,h);
+    const rows=8, rowHeight=h/rows;
+    for(let row=0; row<rows; row++){
+        let x=0;
+        while(x<w){
+            ctx.save();
+            ctx.font=`bold ${rand(18,28)}px Impact`;
+            ctx.fillStyle=`rgba(255,${rand(0,40)},${rand(0,40)},0.9)`;
+            ctx.translate(x, row*rowHeight+rand(5,15));
+            ctx.rotate((Math.random()-0.5)*0.1);
+            ctx.fillText('我爱你',0,0);
+            ctx.restore();
+            x+=ctx.measureText('我爱你').width+rand(10,30);
+        }
+    }
+    let animFrame;
+    function animate(){ ctx.fillStyle='rgba(0,0,0,0.02)'; ctx.fillRect(0,0,w,h); animFrame=requestAnimationFrame(animate); }
+    animate();
+    return ()=>{ cancelAnimationFrame(animFrame); fxCanvas.style.display='none'; };
+}
+
+/* 特效2：径向放射漩涡 - 全屏 */
+function effectRadialBurst(){
+    fxCanvas.style.display='block';
+    const w=fxCanvas.width, h=fxCanvas.height, cx=w/2, cy=h/2;
+    ctx.fillStyle='#1a0000'; ctx.fillRect(0,0,w,h);
+    let angle=0;
+    function draw(){
+        ctx.fillStyle='rgba(10,0,0,0.1)'; ctx.fillRect(0,0,w,h);
+        for(let i=0;i<80;i++){
+            const a=(i/80)*Math.PI*2+angle, r=30+i*7;
+            ctx.save(); ctx.font=`bold ${14+i%8}px Impact`;
+            ctx.fillStyle=`hsl(0,100%,${40+Math.sin(Date.now()/300+i)*15}%)`;
+            ctx.translate(cx+r*Math.cos(a), cy+r*Math.sin(a)); ctx.rotate(a);
+            ctx.fillText(yanderePool[i%yanderePool.length],0,0);
+            ctx.restore();
+        }
+        angle+=0.005;
+    }
+    let animFrame;
+    function animate(){ draw(); animFrame=requestAnimationFrame(animate); }
+    animate();
+    return ()=>{ cancelAnimationFrame(animFrame); fxCanvas.style.display='none'; };
+}
+
+/* 特效3：随机散落无序文字 - 全屏 */
+function effectRandomScatter(){
+    fxCanvas.style.display='block';
+    const w=fxCanvas.width, h=fxCanvas.height;
+    ctx.fillStyle='#000'; ctx.fillRect(0,0,w,h);
+    const items=[];
+    for(let i=0;i<120;i++) items.push({
+        x:Math.random()*w, y:Math.random()*h,
+        text:yanderePool[rand(0,yanderePool.length-1)],
+        size:rand(12,36), opacity:Math.random()*0.8+0.2,
+        dx:(Math.random()-0.5)*0.5, dy:(Math.random()-0.5)*0.5
+    });
+    function draw(){
+        ctx.fillStyle='rgba(0,0,0,0.05)'; ctx.fillRect(0,0,w,h);
+        items.forEach(it=>{
+            ctx.save(); ctx.font=`${it.size}px Impact`;
+            ctx.fillStyle=`rgba(255,${rand(0,80)},${rand(0,80)},${it.opacity})`;
+            ctx.translate(it.x,it.y); ctx.rotate((Math.random()-0.5)*0.3);
+            ctx.fillText(it.text,0,0); ctx.restore();
+            it.x+=it.dx; it.y+=it.dy;
+            if(it.x<0)it.x=w; if(it.x>w)it.x=0;
+            if(it.y<0)it.y=h; if(it.y>h)it.y=0;
+        });
+    }
+    let animFrame;
+    function animate(){ draw(); animFrame=requestAnimationFrame(animate); }
+    animate();
+    return ()=>{ cancelAnimationFrame(animFrame); fxCanvas.style.display='none'; };
+}
+
+/* 特效4：恐怖谷拼贴 - 全屏 */
+function effectCollage(){
+    const container=document.createElement('div');
+    container.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9991;';
+    const phrases=['别离开','永远一起','你在哪','看着我','你是我的','不要逃','注视着你','我喜欢你','好疼','救救我'];
+    for(let i=0;i<25;i++){
+        const el=document.createElement('div');
+        el.className='collage-text';
+        el.textContent=phrases[rand(0,phrases.length-1)];
+        el.style.left=rand(5,90)+'%'; el.style.top=rand(5,90)+'%';
+        el.style.fontSize=rand(18,60)+'px';
+        el.style.transform=`rotate(${rand(-15,15)}deg)`;
+        el.style.opacity=rand(0.6,1);
+        if(Math.random()<0.3){ el.style.border='2px solid red'; el.style.background='rgba(139,0,0,0.2)'; el.style.padding='5px'; }
+        container.appendChild(el);
+    }
+    document.body.appendChild(container);
+    return ()=>{ container.remove(); };
+}
+
+/* 特效5：CRT扫描线 - 全屏 */
+function effectCRT(){
+    crtLayer.classList.add('active');
+    let tearInterval=setInterval(()=>{ crtLayer.style.backgroundPositionY=rand(-5,5)+'px'; setTimeout(()=>{ crtLayer.style.backgroundPositionY='0'; },100); },800);
+    return ()=>{ clearInterval(tearInterval); crtLayer.classList.remove('active'); };
+}
+
+/* 特效6：Win95弹窗雪崩 - 全屏随机位置 */
+function effectWin95(){
+    const popups=[];
+    const messages=['WARNING','SYSTEM ERROR','DECODE FAILED','MEMORY OVERFLOW','FATAL EXCEPTION','ACCESS DENIED'];
+    for(let i=0;i<8;i++){
+        const win=document.createElement('div');
+        win.className='win95-window';
+        win.style.left=rand(5,75)+'%'; win.style.top=rand(5,70)+'%';
+        win.innerHTML=`<div class="win95-title">⚠️ ${messages[rand(0,messages.length-1)]}</div><div class="win95-body">${yanderePool[rand(0,yanderePool.length-1)]}</div>`;
+        document.body.appendChild(win);
+        popups.push(win);
+        win.addEventListener('click',()=>win.remove());
+    }
+    return ()=>{ popups.forEach(w=>w.remove()); };
+}
+
+/* 特效7：文字崩解消融 */
+function effectTextDissolve(){
+    const qt=document.querySelector('.question-text');
+    if(!qt) return ()=>{};
+    const orig=qt.innerHTML, txt=qt.innerText;
+    qt.innerHTML='';
+    for(let ch of txt){
+        const s=document.createElement('span'); s.textContent=ch; s.style.display='inline-block';
+        s.style.transition='all 1.2s ease-out'; s.style.transform=`translate(${(Math.random()-0.5)*40}px, ${(Math.random()-0.5)*40}px)`;
+        s.style.opacity='0'; s.style.color=`rgb(255,${rand(0,100)},${rand(0,100)})`; qt.appendChild(s);
+    }
+    setTimeout(()=>{ qt.innerHTML=orig; },2000);
+    return ()=>{};
+}
+
+/* 特效8：RGB色偏重影 */
+function effectRGBShift(){
+    document.body.classList.add('rgb-shift');
+    return ()=>{ document.body.classList.remove('rgb-shift'); };
+}
+
+/* 特效9：全屏文字瀑布 */
+function effectTextRain(){
+    fxCanvas.style.display='block';
+    const w=fxCanvas.width, h=fxCanvas.height;
+    ctx.fillStyle='#000'; ctx.fillRect(0,0,w,h);
+    const drops=[];
+    for(let i=0;i<40;i++) drops.push({x:Math.random()*w, y:Math.random()*h, speed:rand(2,6), text:yanderePool[rand(0,9)], size:rand(16,30)});
+    function draw(){
+        ctx.fillStyle='rgba(0,0,0,0.08)'; ctx.fillRect(0,0,w,h);
+        drops.forEach(d=>{ ctx.font=`bold ${d.size}px Impact`; ctx.fillStyle='red'; ctx.fillText(d.text, d.x, d.y); d.y+=d.speed; if(d.y>h+50){ d.y=-50; d.x=Math.random()*w; } });
+    }
+    let animFrame; function animate(){ draw(); animFrame=requestAnimationFrame(animate); } animate();
+    return ()=>{ cancelAnimationFrame(animFrame); fxCanvas.style.display='none'; };
+}
+
+/* 特效10：文字倒立乱飘 - 全屏 */
+function effectInvertFloat(){
+    const container=document.createElement('div');
+    container.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9992;';
+    for(let i=0;i<20;i++){
+        const el=document.createElement('div');
+        el.textContent=yanderePool[rand(0,9)];
+        el.style.cssText=`position:absolute; color:red; font-family:Impact; font-size:${rand(20,60)}px; top:${rand(10,80)}%; left:${rand(10,80)}%; transform: scaleY(-1) rotate(${rand(-20,20)}deg); opacity:0.7;`;
+        container.appendChild(el);
+    }
+    document.body.appendChild(container);
+    return ()=>{ container.remove(); };
+}
+
+/* 特效11：错误代码刷屏 - 全屏 */
+function effectErrorCode(){
+    const el=document.createElement('div');
+    el.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:navy;color:#fff;font-family:monospace;font-size:14px;z-index:9994;display:flex;flex-direction:column;justify-content:center;align-items:center;pointer-events:none;';
+    el.innerHTML='<div style="font-size:3rem">:(</div><div>你的行为已触发系统错误</div><div style="font-size:0.8rem;margin-top:10px">error code: 0x0000DEAD</div>';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 2000);
+    return ()=>{ el.remove(); };
+}
+
+/* 特效12：乱码弹窗堆叠 - 全屏随机 */
+function effectGibberishPopups(){
+    const popups=[];
+    for(let i=0;i<12;i++){
+        const p=document.createElement('div');
+        p.style.cssText=`position:fixed;top:${rand(10,70)}%;left:${rand(10,70)}%;background:red;color:#fff;padding:8px;font-family:monospace;border:1px solid #000;z-index:9993;pointer-events:none;transform:rotate(${rand(-10,10)}deg);`;
+        p.textContent=['??','ERROR','死','痛','你逃不掉','404 NOT FOUND'][rand(0,5)];
+        document.body.appendChild(p); popups.push(p);
+    }
+    setTimeout(()=>popups.forEach(p=>p.remove()), 2000);
+    return ()=>{};
+}
+
+/* 特效13：文字镜面翻转 - 全屏中央大字 */
+function effectMirrorText(){
+    const el=document.createElement('div');
+    el.style.cssText='position:fixed;top:30%;left:50%;transform:translate(-50%,-50%) scaleX(-1);font-size:4rem;color:red;font-family:Impact;z-index:9992;pointer-events:none;';
+    el.textContent='看着我';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 1800);
+    return ()=>{};
+}
+
+/* 特效14：心跳式震动弹窗 - 全屏中央 */
+function effectHeartbeatPop(){
+    const pop=document.createElement('div');
+    pop.style.cssText='position:fixed;top:40%;left:40%;background:black;color:red;font-size:2rem;padding:20px;border:2px solid red;z-index:9995;animation:pulse 0.3s infinite;';
+    pop.textContent='我就在这里';
+    document.body.appendChild(pop);
+    navigator.vibrate([50,30,50,30,100]);
+    setTimeout(()=>pop.remove(), 1500);
+    return ()=>{};
+}
+
+/* 特效15：选项按钮集体抖动 */
+function effectButtonPanic(){
+    document.querySelectorAll('.option-btn').forEach(b=>{ b.style.animation='shakeBtn 0.3s infinite'; b.style.background='#8b0000'; });
+    return ()=>{ document.querySelectorAll('.option-btn').forEach(b=>{b.style.animation=''; b.style.background='';}) };
+}
+
+/* 特效16：屏幕边缘渗血 */
+function effectBleedingEdge(){
+    const edge=document.createElement('div');
+    edge.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9991;box-shadow:inset 0 0 60px red;opacity:0.5;';
+    document.body.appendChild(edge);
+    setTimeout(()=>edge.remove(), 2000);
+    return ()=>{};
+}
+
+const allEffects=['hRepeat','radial','scatter','collage','crt','win95','dissolve','rgbShift','rain','invert','errorCode','gibberish','mirror','heartbeat','panic','bleed'];
+let unusedEffects=[...allEffects], activeCleanups=[];
+
+function shuffleArray(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } }
+function getRandomEffects(count){
+    if(unusedEffects.length===0){ unusedEffects=[...allEffects]; shuffleArray(unusedEffects); }
+    return unusedEffects.splice(0, Math.min(count, unusedEffects.length));
+}
+function activateEffect(name){
+    switch(name){
+        case 'hRepeat': return effectHorizontalRepeat();
+        case 'radial': return effectRadialBurst();
+        case 'scatter': return effectRandomScatter();
+        case 'collage': return effectCollage();
+        case 'crt': return effectCRT();
+        case 'win95': return effectWin95();
+        case 'dissolve': return effectTextDissolve();
+        case 'rgbShift': return effectRGBShift();
+        case 'rain': return effectTextRain();
+        case 'invert': return effectInvertFloat();
+        case 'errorCode': return effectErrorCode();
+        case 'gibberish': return effectGibberishPopups();
+        case 'mirror': return effectMirrorText();
+        case 'heartbeat': return effectHeartbeatPop();
+        case 'panic': return effectButtonPanic();
+        case 'bleed': return effectBleedingEdge();
+        default: return ()=>{};
+    }
+}
+function clearAllEffects(){ activeCleanups.forEach(c=>c()); activeCleanups=[]; }
+
+function triggerOptionEffects(idx){
+    if(currentStep < 5) return;
+    const progress = Math.min((currentStep - 5) / 25, 1);
+    const probability = 0.1 + progress * 0.8;
+    if(Math.random() > probability) return;
+    const effects = getRandomEffects(1);
+    effects.forEach(name => {
+        const cleanup = activateEffect(name);
+        activeCleanups.push(cleanup);
+        setTimeout(() => { cleanup(); const idx = activeCleanups.indexOf(cleanup); if(idx > -1) activeCleanups.splice(idx, 1); }, 1500);
+    });
+}
+</script><script>
+// ==================== 全局变量 ====================
+const animalsEmoji = { '牛':'🐮','兔':'🐰','犬':'🐶','猫':'🐱','猫头鹰':'🦉','狐':'🦊','蛇':'🐍','虎鲸':'🐋','狮子':'🦁' };
+const animalDescriptions = {
+  '猫头鹰': '监视者', '牛': '供养者', '兔': '受难者', '虎鲸': '掠夺者',
+  '犬': '忠诚者', '狐': '戏弄者', '猫': '善变者', '狮子': '占有者', '蛇': '缠绕者'
+};
+let animalScores = {}, currentStep = 0, selectedOption = null, cornerClickCount = 0, cornerScale = 1;
+const progressFill = document.getElementById('progressFill'),
+      confirmBtn = document.getElementById('confirmBtn'),
+      quizContainer = document.getElementById('quizContainer'),
+      app = document.getElementById('app'),
+      callOverlay = document.getElementById('callOverlay'),
+      fullscreenGlitch = document.getElementById('fullscreenGlitch'),
+      redModal = document.getElementById('redModal'),
+      modalRedText = document.getElementById('modalRedText'),
+      cornerImg = document.getElementById('corner-img'),
+      fogLayer = document.getElementById('fogLayer'),
+      bgm = document.getElementById('bgmAudio'),
+      phoneRing = document.getElementById('phoneRing'),
+      smsSound = document.getElementById('smsSound'),
+      footstep = document.getElementById('footstep'),
+      whisperAudio = document.getElementById('whisperAudio'),
+      scratchAudio = document.getElementById('scratchAudio');
+
+function vibrate(p) { if(!navigator.vibrate) return; navigator.vibrate(p||[15]); }
+function playAudio(audio) { if(audio){ audio.currentTime=0; audio.play().catch(()=>{}); } }
+
+// ==================== 进度与氛围 ====================
+function updateProgress() {
+    let p = Math.min((currentStep/31)*100, 100);
+    progressFill.style.width = p+'%';
+    progressFill.style.background = p<20?'#ff9a9e':p<50?'#d63384':p<80?'#8b0000':'#4a0000';
+    document.body.classList.toggle('dark-bg', currentStep>=10);
+    document.body.classList.toggle('deeper-bg', currentStep>=25);
+    if(currentStep>=15) document.body.classList.add('breath-bg'); else document.body.classList.remove('breath-bg');
+    if(currentStep>=20) quizContainer.classList.add('ominous'); else quizContainer.classList.remove('ominous');
+}
+
+function applyUncannyText() {
+    const qt = document.querySelector('.question-text');
+    if(!qt) return;
+    qt.classList.remove('uncanny-text','phase2','phase3','text-bleed');
+    if(currentStep>=22){ qt.classList.add('uncanny-text','phase3','text-bleed'); }
+    else if(currentStep>=14){ qt.classList.add('uncanny-text','phase2'); }
+    else if(currentStep>=7){ qt.classList.add('uncanny-text'); }
+}
+
+// ==================== 基础特效工具 ====================
+function showPeekEye() { const e=document.createElement('div'); e.className='peek-eye'; e.textContent='👁️'; e.style.top=rand(20,70)+'%'; e.style.left=rand(20,70)+'%'; document.body.appendChild(e); setTimeout(()=>e.remove(),1200); }
+function showHiddenText(text) { const el=document.createElement('div'); el.className='hidden-terror'; el.textContent=text; el.style.top=rand(30,60)+'%'; el.style.left=rand(20,60)+'%'; document.body.appendChild(el); setTimeout(()=>el.remove(),2000); }
+function showFakeSms(text) { const sms=document.createElement('div'); sms.style.cssText='position:fixed;bottom:80px;right:10px;background:#fff;border:1px solid red;border-radius:10px;padding:10px;font-size:0.9rem;color:red;z-index:10070;animation:slideIn .3s forwards;max-width:180px;'; sms.innerHTML=`<div>未知号码</div><div>${text}</div>`; document.body.appendChild(sms); playAudio(smsSound); setTimeout(()=>{ sms.style.animation='slideOut .3s forwards'; setTimeout(()=>sms.remove(),300); },2000); }
+function showDanmaku(text, cb) { const d=document.createElement('div'); d.className='danmaku'; d.textContent=text; document.body.appendChild(d); d.addEventListener('animationend',()=>{ d.remove(); if(cb) cb(); }); }
+function showSysError(msg) {
+    const dlg = document.createElement('div');
+    dlg.style.cssText = 'position:fixed; bottom:120px; right:15px; background:#c0c0c0; border:2px solid #000; box-shadow:2px 2px 0 #fff inset,-2px -2px 0 #808080 inset; font-family:monospace; font-size:12px; z-index:10060; min-width:140px; max-width:200px;';
+    dlg.innerHTML = `<div style="background:#000080;color:#fff;padding:3px 8px;font-weight:bold;font-size:11px;">系统提示</div><div style="padding:8px 10px;color:#000;font-size:11px;">${msg||'数据上传中...'}</div>`;
+    document.body.appendChild(dlg); playAudio(smsSound); setTimeout(()=>dlg.remove(),2800);
+}
+function showBloodFog() { fogLayer.classList.add('active'); setTimeout(()=>fogLayer.classList.remove('active'),3000); }
+function showMonitorWatermark() { if(document.querySelector('.monitor-mark')) return; const m=document.createElement('div'); m.className='monitor-mark'; m.innerHTML='🔴 监视中'; document.body.appendChild(m); }
+function clearFx() { document.body.style.filter=''; document.body.style.opacity=1; crtLayer.classList.remove('active'); fogLayer.classList.remove('active'); }
+
+// ==================== 阶段恐怖触发 ====================
+let horrorCounter = 0;
+const HORROR_INTERVAL = 2;
+function triggerRandomHorror() {
+    if(currentStep < 5) return;
+    horrorCounter++;
+    if(horrorCounter < HORROR_INTERVAL && currentStep !== 20 && currentStep !== 25 && currentStep < 29) return;
+    horrorCounter = 0;
+    let basicProb = currentStep<16 ? 0.6 : (currentStep<24 ? 0.85 : 1.0);
+    if(Math.random() < basicProb) {
+        let count = currentStep<16 ? 1 : (currentStep<24 ? 2 : 3);
+        for(let i=0; i<count; i++) {
+            let r = Math.random();
+            if(r < 0.2) showPeekEye();
+            else if(r < 0.4) showHiddenText(yanderePool[rand(0,yanderePool.length-1)]);
+            else if(r < 0.6) showFakeSms('我在看着你');
+            else if(r < 0.8) showSysError();
+            else showBloodFog();
+        }
+    }
+    if(currentStep>=6 && currentStep<=14) {
+        document.querySelector('.question-text')?.classList.add('blood-bleed');
+        if(Math.random()<0.3) showFakeSms('最喜欢你了');
+    }
+    if(currentStep>=16 && currentStep<=24) {
+        showMonitorWatermark();
+        if(Math.random()<0.4) showSysError('异常心理特征检测');
+        if(Math.random()<0.3) { document.body.style.animation='shakeScreen 0.2s 3'; setTimeout(()=>document.body.style.animation='',600); }
+    }
+    if(currentStep===25) {
+        showBloodFog(); showMonitorWatermark();
+        document.body.style.animation='shakeScreen 0.15s 4'; playAudio(footstep);
+    }
+    if(currentStep>=26 && currentStep<=30) {
+        if(Math.random()<0.6) showSysError('恐惧情绪监测中');
+    }
+}
+
+// ==================== 选项专属动画映射与实现 ====================
+const optionAnimMap = [
+  [()=>gentleEffect(), ()=>sweetEffect(), ()=>warmEffect(), ()=>quietEffect()],
+  [()=>gentleEffect(), ()=>waitEffect(), ()=>locateEffect(), ()=>coldEffect()],
+  [()=>msgEffect(), ()=>locateEffect(), ()=>gentleEffect(), ()=>spyEffect()],
+  [()=>sweetEffect(), ()=>showEffect(), ()=>peekEffect(), ()=>holdEffect()],
+  [()=>gentleEffect(), ()=>missEffect(), ()=>freeEffect(), ()=>waitNearEffect()],
+  [()=>nearEffect(), ()=>neighborEffect(), ()=>hideEffect(), ()=>trackPlaceEffect()],
+  [()=>sadEffect(), ()=>coldEffect(), ()=>spyEffect(), ()=>controlEffect()],
+  [()=>freeEffect(), ()=>sadEffect(), ()=>callEffect(), ()=>nearRoomEffect()],
+  [()=>sweetEffect(), ()=>mysteryEffect(), ()=>horrorEffect(), ()=>detectEffect()],
+  [()=>cookEffect(), ()=>meetEffect(), ()=>checkPhoneEffect(), ()=>holdEffect()],
+  [()=>gentleEffect(), ()=>curiousEffect(), ()=>checkTimeEffect(), ()=>recordEffect()],
+  [()=>freeEffect(), ()=>sweetEffect(), ()=>peekEffect(), ()=>checkPhoneEffect()],
+  [()=>gentleEffect(), ()=>accidentEffect(), ()=>checkBagEffect(), ()=>spyEffect()],
+  [()=>gentleEffect(), ()=>sadEffect(), ()=>doubtEffect(), ()=>knowAllEffect()],
+  [()=>sweetEffect(), ()=>recordEffect(), ()=>spyEffect(), ()=>allDataEffect()],
+  [()=>gentleEffect(), ()=>workEffect(), ()=>spyAccountEffect(), ()=>testEffect()],
+  [()=>freeEffect(), ()=>listenEffect(), ()=>showExistEffect(), ()=>recordCallEffect()],
+  [()=>sweetEffect(), ()=>shyEffect(), ()=>confirmEffect(), ()=>knowAllEffect()],
+  [()=>changeEffect(), ()=>protectEffect(), ()=>dieEffect(), ()=>liveEffect()],
+  [()=>askEffect(), ()=>waitEffect(), ()=>callEffect(), ()=>spyNumberEffect()],
+  [()=>aloneEffect(), ()=>peopleEffect(), ()=>doubtEffect(), ()=>readMindEffect()],
+  [()=>gentleEffect(), ()=>scareEffect(), ()=>watchedEffect(), ()=>watchYouEffect()],
+  [()=>curiousEffect(), ()=>gentleEffect(), ()=>searchMeEffect(), ()=>searchAllEffect()],
+  [()=>scareEffect(), ()=>careEffect(), ()=>controlEffect(), ()=>planEffect()],
+  [()=>nearEffect(), ()=>floorEffect(), ()=>roomEffect(), ()=>bodyEffect()],
+  [()=>normalEffect(), ()=>abnormalEffect(), ()=>crazyTextEffect(), ()=>noNormalEffect()],
+  [()=>confuseEffect(), ()=>lostEffect(), ()=>mirrorEffect(), ()=>othersEffect()],
+  [()=>seeEffect(), ()=>confirmEffect(), ()=>safeEffect(), ()=>powerEffect()],
+  [()=>needEffect(), ()=>doubtEffect(), ()=>noNeedEffect(), ()=>onlyLoveEffect()],
+  [()=>rejectDieEffect(), ()=>understandEffect(), ()=>lastRoadEffect(), ()=>perfectDieEffect()],
+  [()=>yesEffect(), ()=>noEffect()]
+];
+
+function gentleEffect(){vibrate([10]);document.body.style.filter='brightness(1.05)';setTimeout(()=>document.body.style.filter='',300)}
+function sweetEffect(){vibrate([20]);showFakeSms('满脑子都是你');}
+function warmEffect(){vibrate([15]);let qt=document.querySelector('.question-text');if(qt)qt.classList.add('blood-bleed');setTimeout(()=>{if(qt)qt.classList.remove('blood-bleed')},800);}
+function quietEffect(){vibrate([10]);document.body.style.opacity=0.9;setTimeout(()=>document.body.style.opacity=1,300)}
+function waitEffect(){vibrate([30]);showDanmaku('我会一直等');}
+function locateEffect(){vibrate([40]);showSysError('定位追踪已启动');}
+function coldEffect(){vibrate([50]);document.body.style.background='#222';setTimeout(()=>document.body.style.background='',500)}
+function msgEffect(){vibrate([20]);playAudio(smsSound);}
+function spyEffect(){vibrate([60]);showPeekEye();showSysError('监控记录生成');}
+function showEffect(){vibrate([30]);showDanmaku('所有人都知道你是我的');}
+function peekEffect(){vibrate([70]);showPeekEye();playAudio(footstep);}
+function holdEffect(){vibrate([80]);document.body.classList.add('flash-bg');setTimeout(()=>document.body.classList.remove('flash-bg'),300)}
+function missEffect(){vibrate([40]);showFakeSms('每分每秒都想见面')}
+function freeEffect(){vibrate([20]);clearFx();}
+function waitNearEffect(){vibrate([90]);showMonitorWatermark();playAudio(footstep);}
+function nearEffect(){vibrate([30]);showDanmaku('离你越近越好')}
+function neighborEffect(){vibrate([50]);showSysError('周边人员检索完毕');}
+function hideEffect(){vibrate([60]);document.body.style.filter='brightness(0.8)';setTimeout(()=>document.body.style.filter='',400)}
+function trackPlaceEffect(){vibrate([70]);showSysError('活动路线永久保存');}
+function sadEffect(){vibrate([40]);let qt=document.querySelector('.question-text');if(qt)qt.classList.add('blood-bleed');}
+function doubtEffect(){vibrate([60]);showHiddenText('你在撒谎对不对');}
+function knowAllEffect(){vibrate([100]);showHiddenText('没有任何东西能瞒住我');showMonitorWatermark();playAudio(whisperAudio);}
+function recordEffect(){vibrate([50]);showSysError('资料归档加密');}
+function allDataEffect(){vibrate([120]);showSysError('你的所有信息全部收录');}
+function spyAccountEffect(){vibrate([80]);showSysError('小号身份已破解');}
+function testEffect(){vibrate([100]);showHiddenText('我早就在试探你')}
+function listenEffect(){vibrate([60]);showHiddenText('一字不漏全听见');}
+function showExistEffect(){vibrate([70]);showDanmaku('宣告所有权');}
+function recordCallEffect(){vibrate([90]);showSysError('通话录音存档');}
+function confirmEffect(){vibrate([70]);showFakeSms('只能偏爱我一人')}
+function protectEffect(){vibrate([80]);showDanmaku('清除所有障碍')}
+function dieEffect(){vibrate([150]);showBloodFog();playAudio(scratchAudio);}
+function liveEffect(){vibrate([120]);showHiddenText('我的生命只为你存在')}
+function askEffect(){vibrate([30]);clearFx();}
+function spyNumberEffect(){vibrate([100]);showSysError('号码溯源成功');}
+function aloneEffect(){vibrate([20]);showHiddenText('真的只有你一人？')}
+function peopleEffect(){vibrate([40]);showPeekEye();}
+function readMindEffect(){vibrate([130]);showHiddenText('没有任何东西能瞒住我');showMonitorWatermark();}
+function watchedEffect(){vibrate([80]);showMonitorWatermark();}
+function watchYouEffect(){vibrate([150]);showHiddenText('你的一举一动我全清楚');playAudio(whisperAudio);}
+function searchMeEffect(){vibrate([70]);showSysError('全网检索你的痕迹');}
+function searchAllEffect(){vibrate([120]);showSysError('相关人员全部排查');}
+function careEffect(){vibrate([50]);showFakeSms('余生由我看管照顾')}
+function planEffect(){vibrate([130]);showHiddenText('完美计划早已写好')}
+function floorEffect(){vibrate([50]);showDanmaku('只隔一堵墙')}
+function roomEffect(){vibrate([70]);showHiddenText('同一空间永不分离')}
+function bodyEffect(){vibrate([180]);showBloodFog();showHiddenText('没有任何东西能瞒住我');showMonitorWatermark();}
+function normalEffect(){vibrate([20]);clearFx();}
+function abnormalEffect(){vibrate([100]);document.querySelector('.question-text').style.color='#ff6666';}
+function crazyTextEffect(){vibrate([100]);document.querySelector('.question-text').style.textShadow='0 0 12px red';}
+function mirrorEffect(){vibrate([120]);showPeekEye();playAudio(scratchAudio);}
+function confuseEffect(){vibrate([60]);showHiddenText('分不清现实了？')}
+function lostEffect(){vibrate([50]);document.body.style.opacity=0.8;}
+function othersEffect(){vibrate([70]);showHiddenText('你不需要别人')}
+function seeEffect(){vibrate([40]);showFakeSms('渴望被你注视')}
+function safeEffect(){vibrate([60]);showHiddenText('安全感只能我给你')}
+function powerEffect(){vibrate([110]);showSysError('掌控一切才安心');}
+function needEffect(){vibrate([30]);showFakeSms('离不开你的偏爱')}
+function noNeedEffect(){vibrate([90]);showHiddenText('我不需要任何人')}
+function onlyLoveEffect(){vibrate([100]);showHiddenText('没有任何东西能瞒住我');showMonitorWatermark();}
+function rejectDieEffect(){vibrate([40]);clearFx();}
+function understandEffect(){vibrate([50]);showHiddenText('但绝不接受')}
+function lastRoadEffect(){vibrate([120]);showBloodFog();}
+function perfectDieEffect(){vibrate([180]);showBloodFog();loopWhisper();}
+function yesEffect(){vibrate([200]);showBloodFog();showHiddenText('没有任何东西能瞒住我');showMonitorWatermark();}
+function noEffect(){vibrate([250]);extremeForceSelect();}
+function showFakeS(text){
+  let sms=document.createElement('div');
+  sms.className='sms-popup';
+  sms.innerHTML=`<div>未知号码</div><div>${text||'我一直在'}</div>`;
+  document.body.appendChild(sms); playAudio(smsSound);
+  setTimeout(()=>{sms.style.animation='slideOut .3s forwards';setTimeout(()=>sms.remove(),300)},2000);
+}
+function extremeForceSelect(){
+  navigator.vibrate([100,50,100]); playAudio(scratchAudio);
+  document.querySelectorAll('.option-btn').forEach(btn=>btn.style.animation='shakeBtn .5s infinite');
+}
+function loopWhisper(){ whisperAudio.loop=true; playAudioToEarphone(whisperAudio); }
+function playAudioToEarphone(audio){
+  if(/Mobile|Android|iPhone/.test(navigator.userAgent)){
+    try{audio.setSinkId('earpiece')}catch(e){audio.volume=0.06}
+  }
+  playAudio(audio);
+}
+
+// ==================== 问题数据 ====================
+const questions = [
+    {text:"1. 和伴侣一起逛超市，你最喜欢的区域是？",answers:[{text:"生鲜蔬果区",animal:"牛"},{text:"零食货架",animal:"兔"},{text:"熟食区",animal:"犬"},{text:"日用品区",animal:"猫"}]},
+    {text:"2. 伴侣说今晚加班，你通常的回复是？",answers:[{text:"「辛苦啦，我给你留饭。」",animal:"牛"},{text:"「大概几点？我等你。」",animal:"兔"},{text:"「到了给我发定位。」",animal:"犬"},{text:"不回复",animal:"猫"}]},
+    {text:"3. 约会迟到一小时，你的第一反应是？",answers:[{text:"发消息问",animal:"兔"},{text:"看手机定位",animal:"犬"},{text:"坐着等",animal:"牛"},{text:"翻社交动态",animal:"猫头鹰"}]},
+    {text:"4. 你最喜欢在什么时候触碰伴侣？",answers:[{text:"早上睡醒时",animal:"兔"},{text:"公众场合",animal:"狐"},{text:"ta没注意时",animal:"猫"},{text:"事后无力时",animal:"牛"}]},
+    {text:"5. 你理想中的约会频率是？",answers:[{text:"一周两三次",animal:"牛"},{text:"天天见面",animal:"兔"},{text:"想见就见",animal:"猫"},{text:"每天在附近等",animal:"蛇"}]},
+    {text:"6. 搬新家时，你最在意的是？",answers:[{text:"离伴侣公司近",animal:"牛"},{text:"邻居是什么人",animal:"犬"},{text:"窗帘够不够厚",animal:"猫"},{text:"周边有ta常去的地方",animal:"狐"}]},
+    {text:"7. 恋爱中，什么最难忍受？",answers:[{text:"付出不被看见",animal:"牛"},{text:"突然的冷淡",animal:"兔"},{text:"有事瞒着我",animal:"猫头鹰"},{text:"ta不怕失去我",animal:"狐"}]},
+    {text:"8. 伴侣提出想要独处时间？",answers:[{text:"「好，需要多久？」",animal:"猫"},{text:"「是不是我烦到你了？」",animal:"兔"},{text:"「好的，但电话要接。」",animal:"犬"},{text:"「那我就在隔壁房间。」",animal:"蛇"}]},
+    {text:"9. 一起看电影，你会选什么类型？",answers:[{text:"浪漫爱情",animal:"兔"},{text:"悬疑推理",animal:"狐"},{text:"心理惊悚",animal:"虎鲸"},{text:"真实犯罪纪录片",animal:"猫头鹰"}]},
+    {text:"10. 伴侣出差回来，你的欢迎方式是？",answers:[{text:"做一桌菜",animal:"牛"},{text:"去机场接",animal:"兔"},{text:"先看手机电量",animal:"猫头鹰"},{text:"紧紧抱住不放",animal:"蛇"}]},
+    {text:"11. 你查过伴侣的手机使用时间统计吗？",answers:[{text:"不知道这功能",animal:"牛"},{text:"偶尔看看",animal:"兔"},{text:"每周看深夜时段",animal:"犬"},{text:"截图按月比对",animal:"猫头鹰"}]},
+    {text:"12. 伴侣说「我去洗澡」，你在这十五分钟里？",answers:[{text:"做自己的事",animal:"牛"},{text:"帮ta准备睡衣",animal:"兔"},{text:"在门外等着",animal:"犬"},{text:"检查ta的手机",animal:"猫头鹰"}]},
+    {text:"13. 你翻过伴侣的实体私人物品吗？",answers:[{text:"从不",animal:"牛"},{text:"无意翻到过",animal:"兔"},{text:"偶尔翻钱包抽屉",animal:"犬"},{text:"经常翻看",animal:"猫头鹰"}]},
+    {text:"14. 伴侣情绪低落，你直觉是？",answers:[{text:"工作压力大",animal:"牛"},{text:"是不是我不够好",animal:"兔"},{text:"ta在隐瞒什么",animal:"犬"},{text:"我知道所有原因",animal:"虎鲸"}],terrorHint:"你真的知道吗？"},
+    {text:"15. 你手机里关于伴侣的资料？",answers:[{text:"照片聊天记录",animal:"兔"},{text:"日期喜好清单",animal:"牛"},{text:"所有账号密码",animal:"犬"},{text:"以上全部及家人联系方式",animal:"猫头鹰"}]},
+    {text:"16. 你注册过社交小号吗？",answers:[{text:"从不",animal:"牛"},{text:"有一个工作号",animal:"狐"},{text:"有一个关注伴侣的号",animal:"犬"},{text:"多个，测试伴侣",animal:"狐"}]},
+    {text:"17. 伴侣和不认识的人通话，你通常？",answers:[{text:"做自己的事",animal:"牛"},{text:"假装不在意，竖着耳朵听",animal:"兔"},{text:"走近让对方听到我存在",animal:"狮子"},{text:"记下时长事后比对",animal:"猫头鹰"}]},
+    {text:"18. 你问过「你最爱谁」吗？",answers:[{text:"撒娇时问过",animal:"兔"},{text:"偶尔问，不喜欢自己这样",animal:"猫"},{text:"经常需要确认",animal:"犬"},{text:"不问，我知道ta的一切",animal:"虎鲸"}],terrorHint:"你确定吗？"},
+    {text:"19. 你觉得爱一个人可以做到什么程度？",answers:[{text:"为ta改变自己",animal:"牛"},{text:"为ta扫清障碍",animal:"兔"},{text:"为ta去死",animal:"蛇"},{text:"为ta活着",animal:"蛇"}]},
+    {text:"20. 伴侣手机里有个联系人叫「别接」。你会？",answers:[{text:"直接问是谁",animal:"牛"},{text:"先观察",animal:"兔"},{text:"立刻打过去",animal:"犬"},{text:"用自己渠道查",animal:"猫头鹰"}],special:'call'},
+    {text:"21. 你现在是一个人做这套题吗？",answers:[{text:"是",animal:"兔"},{text:"旁边有人",animal:"牛"},{text:"屏幕里的测试也可能在测试我",animal:"猫"},{text:"我已经知道你在想什么了",animal:"虎鲸"}],terrorHint:"我看见了"},
+    {text:"22. 你有没有怀疑过自己正被暗中观察？",answers:[{text:"从不",animal:"牛"},{text:"偶尔有",animal:"兔"},{text:"我知道有人在看",animal:"猫头鹰"},{text:"我也在看着你",animal:"猫头鹰"}]},
+    {text:"23. 你搜索过自己的名字吗？",answers:[{text:"试过一两次",animal:"兔"},{text:"从没",animal:"牛"},{text:"定期搜",animal:"犬"},{text:"不只搜自己，还搜ta和ta的前任同事",animal:"猫头鹰"}],special:'redText'},
+    {text:"24. 如果伴侣失去行动能力，你的生活会？",answers:[{text:"太可怕了",animal:"牛"},{text:"我会照顾ta一辈子",animal:"兔"},{text:"ta永远不会离开我了",animal:"狐"},{text:"我认真规划过",animal:"虎鲸"}],terrorHint:"你在计划什么？"},
+    {text:"25. 你最想住进什么位置，才能更好地爱ta？",answers:[{text:"同一个小区",animal:"牛"},{text:"同一层楼",animal:"兔"},{text:"同一间屋",animal:"猫"},{text:"同一具身体",animal:"虎鲸"}]},
+    {text:"26. 你觉得自己正常吗？",answers:[{text:"挺正常的",animal:"牛"},{text:"偶尔不正常",animal:"兔"},{text:"正常人谁做这套题",animal:"猫"},{text:"我不需要正常",animal:"虎鲸"}],special:'glitchPopup'},
+    {text:"27. 你是否深夜对着镜子问过自己？",answers:[{text:"有过，没答案",animal:"兔"},{text:"问过，更迷茫",animal:"猫"},{text:"镜子里的我回答了",animal:"蛇"},{text:"不问，答案在别人那里",animal:"犬"}]},
+    {text:"28. 童年时期你最缺的是什么？",answers:[{text:"被看见",animal:"兔"},{text:"被肯定",animal:"牛"},{text:"安全感",animal:"犬"},{text:"控制权",animal:"虎鲸"}],terrorHint:"所以你变成了现在这样"},
+    {text:"29. 你觉得自己需要被爱吗？",answers:[{text:"需要",animal:"牛"},{text:"不确定",animal:"兔"},{text:"不需要",animal:"蛇"},{text:"我只需要爱ta",animal:"虎鲸"}]},
+    {text:"30. 你觉得「一起死」这件事？",answers:[{text:"太极端",animal:"牛"},{text:"可以理解但不会做",animal:"兔"},{text:"不能在一起时的最后退路",animal:"虎鲸"},{text:"这是爱圆满的唯一道路",animal:"猫头鹰"}],terrorHint:"你真的这么想吗？"},
+    {text:"31. 你愿意为了爱人付出一切吗？",answers:[{text:"愿意",animal:null},{text:"不愿意",animal:null}],special:'forceYes'}
+];
+
+// ==================== 核心答题流程 ====================
+function showQuestion(index) {
+    clearAllEffects();
+    selectedOption=null; confirmBtn.style.display='none';
+    if(index>=31){ showResult(); return; }
+    currentStep=index; updateProgress();
+    const q=questions[index];
+    let html=`<div class="question-text">${q.text}</div>`;
+    q.answers.forEach((a,i)=>html+=`<button class="option-btn" onclick="selectOption(${i})">${a.text}</button>`);
+    app.innerHTML=html;
+    applyUncannyText();
+    if(q.terrorHint && currentStep>=5) setTimeout(()=>showHiddenText(q.terrorHint), 1000);
+    triggerRandomHorror();
+}
+
+function selectOption(idx) {
+    document.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
+    document.querySelectorAll('.option-btn')[idx].classList.add('selected');
+    selectedOption=questions[currentStep].answers[idx];
+    confirmBtn.style.display='block';
+    if(currentStep>=5) vibrate();
+    if(optionAnimMap[currentStep] && optionAnimMap[currentStep][idx] && currentStep>=5) {
+        optionAnimMap[currentStep][idx]();
+    }
+    triggerOptionEffects(idx);
+}
+
+function confirmAnswer() {
+    if(!selectedOption) return;
+    if(currentStep===30){ handleQ31(); return; }
+    if(selectedOption.animal) animalScores[selectedOption.animal]=(animalScores[selectedOption.animal]||0)+1;
+    if(currentStep===19) showFakeCall(()=>{ currentStep++; showQuestion(currentStep); });
+    else if(currentStep===22) showRedModal(()=>{ currentStep++; showQuestion(currentStep); });
+    else if(currentStep===25) showDanmaku('我也这么觉得',()=>{ currentStep++; showQuestion(currentStep); });
+    else { currentStep++; showQuestion(currentStep); }
+}
+
+// 第四段中的事件与结果函数已在第四段定义，此处省略（实际文件保留第四段脚本即可）
+// 注意：此处不再重复定义 showFakeCall, showRedModal, handleQ31 等，它们在第四段脚本中
+</script><script>
+function showFakeCall(cb){
+    callOverlay.innerHTML=`<div class="call-text">未知号码</div><div style="color:#fff;font-size:1.2rem;margin:10px 0">正在拨打...</div><div class="call-btns"><button class="call-btn reject" id="rejectBtn">拒绝</button><button class="call-btn accept" id="acceptBtn">接听</button></div>`;
+    callOverlay.classList.add('active'); playAudio(phoneRing);
+    document.getElementById('rejectBtn').onclick=()=>{
+        phoneRing.pause(); callOverlay.classList.remove('active');
+        let tip=document.createElement('div');
+        tip.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:red;font-size:2rem;z-index:10090;';
+        tip.textContent='你拒绝不了我'; document.body.appendChild(tip);
+        setTimeout(()=>tip.remove(),2000); cb();
+    };
+    document.getElementById('acceptBtn').onclick=()=>{
+        phoneRing.pause(); callOverlay.classList.remove('active');
+        fullscreenGlitch.classList.add('active'); playAudio(whisperAudio);
+        fullscreenGlitch.onclick=()=>{ fullscreenGlitch.classList.remove('active'); showSysError('通话已中断。对方仍在监听。'); cb(); };
+    };
+}
+
+function showRedModal(cb){
+    redModal.classList.add('active');
+    modalRedText.onclick=()=>{
+        redModal.classList.remove('active');
+        let img=document.createElement('img');
+        img.src='https://i.imgs.ovh/2026/06/29/9f8c54786f524bebd60100c68d2e571e.png';
+        img.className='bounce-img'; img.style.top='40%'; img.style.left='35%';
+        img.style.width='clamp(120px,40vw,200px)'; document.body.appendChild(img);
+        img.addEventListener('animationend',()=>{ img.remove(); cb(); });
+    };
+}
+
+function handleQ31(){
+    if(selectedOption.text==='愿意'){ showResultImage(); return; }
+    if(!window.q31Count) window.q31Count=0;
+    window.q31Count++;
+    let btns=document.querySelectorAll('.option-btn'), yes=btns[0], no=btns[1];
+    if(window.q31Count<5){
+        no.style.transform=`scale(${Math.max(0.3,1-window.q31Count*0.15)})`;
+        yes.style.transform=`scale(${1+window.q31Count*0.3})`;
+        for(let i=0;i<25;i++){
+            let s=document.createElement('div'); s.className='why-flood'; s.textContent='为什么？';
+            s.style.top=Math.random()*90+'%'; s.style.left=Math.random()*90+'%';
+            s.style.fontSize=`clamp(1.3rem,5vw,${2+Math.random()*3}rem)`;
+            document.body.appendChild(s); setTimeout(()=>s.remove(),2000);
+        }
+        showSysError('选项冲突，无法拒绝');
+    }else if(window.q31Count===5){
+        document.body.classList.add('flash-bg');
+        showScreenCrack(); loopWhisper();
+        document.body.style.background='#0a0000'; quizContainer.style.background='#1a0000'; quizContainer.style.color='#fff';
+        no.style.display='none'; yes.style.transform='scale(2.5)'; yes.style.background='#b30000';
+        for(let i=0;i<80;i++){
+            let s=document.createElement('div'); s.className='why-flood'; s.textContent='为什么？';
+            s.style.top=Math.random()*100+'%'; s.style.left=Math.random()*100+'%';
+            document.body.appendChild(s); setTimeout(()=>s.remove(),3500);
+        }
+        showSysError('拒绝指令无效，请重新选择');
+        yes.onclick=()=>showResultImage();
+    }
+    vibrate([200,100,200,100,300]); playAudio(scratchAudio);
+}
+
+function showScreenCrack(){
+    if(document.querySelector('.crack')) return;
+    let crack=document.createElement('div'); crack.className='crack';
+    document.body.appendChild(crack);
+}
+
+function showResultImage(){
+    document.querySelectorAll('.why-flood').forEach(e=>e.remove());
+    document.body.style.background='#000'; quizContainer.style.display='none';
+    let img=document.createElement('img');
+    img.src='https://i.imgs.ovh/2026/06/29/ba19af475a2fb16588c94ac589c1c2c5.png';
+    img.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:80%;max-width:400px;z-index:10010;cursor:pointer;';
+    document.body.appendChild(img);
+    let scale=1;
+    setInterval(()=>{scale=scale===1?1.07:1;img.style.transform=`translate(-50%,-50%) scale(${scale})`},600);
+    img.onclick=()=>{img.remove();quizContainer.style.display='block';document.body.style.background='';showResult()};
+}
+
+function showResult(){
+    clearAllEffects(); clearFx();
+    selectedOption=null; confirmBtn.style.display='none';
+    let maxAnimal='兔', maxScore=0;
+    for(let [a,s] of Object.entries(animalScores)){ if(s>maxScore){maxScore=s; maxAnimal=a;} }
+    const desc = animalDescriptions[maxAnimal] || '未知';
+    app.innerHTML=`<div style="font-size:clamp(1.8rem,6vw,2.5rem);margin-top:20px;color:#d63384">你的恋爱动物是</div>
+    <div style="font-size:clamp(4rem,15vw,7rem);margin:20px 0">${animalsEmoji[maxAnimal]||'❓'}</div>
+    <div style="font-size:clamp(2rem,8vw,3.5rem);font-weight:bold;color:#d63384">${maxAnimal}</div>
+    <div style="font-size:clamp(1.2rem,4vw,2rem);color:#b03060;margin:10px 0">—— ${desc} ——</div>
+    <div style="font-size:clamp(1rem,4vw,1.5rem);margin-top:40px;color:#c71585">感谢您参与测试，唐臣公寓期待您的入住</div>
+    <button class="option-btn" onclick="location.reload()" style="text-align:center;background:#ffb6c1;color:#fff;margin-top:30px">重新测试</button>`;
+    quizContainer.style.background='#fff0f5'; document.body.style.background='#ffe6f0';
+    document.body.classList.remove('dark-bg','deeper-bg','breath-bg');
+    quizContainer.classList.remove('ominous');
+    bgm.pause(); bgm.currentTime=0; whisperAudio.loop=false;
+}
+
+function startQuiz(){
+    vibrate([20]); bgm.play().catch(()=>{});
+    document.getElementById('startPage').classList.add('hidden');
+    setTimeout(()=>{ document.getElementById('startPage').style.display='none'; quizContainer.classList.add('visible'); showQuestion(0); },400);
+}
+
+function initGyroscope(){
+    if(!window.DeviceOrientationEvent) return;
+    window.addEventListener('deviceorientation',(e)=>{
+        if(currentStep<16) return;
+        let tilt=Math.abs(e.beta)||Math.abs(e.gamma);
+        if(tilt>15 && !document.querySelector('.tilt-warn')){
+            let el=document.createElement('div');
+            el.className='why-flood tilt-warn';
+            el.textContent='别躲，我看得见';
+            el.style.top='50%';el.style.left='50%';el.style.transform='translate(-50%,-50%)';
+            document.body.appendChild(el);
+            setTimeout(()=>el.remove(),1500);
+            vibrate([80]);
+        }
+    })
+}
+initGyroscope();
+
+document.addEventListener('touchmove',(e)=>{
+    let touch=e.touches[0];
+    cornerImg.style.transform=`translate(${touch.clientX-50}px,${touch.clientY-50}px)`;
+});
+
+cornerImg.addEventListener('click',()=>{
+    cornerClickCount++;
+    if(cornerClickCount===1) cornerImg.src='https://i.imgs.ovh/2026/06/29/9f8c54786f524bebd60100c68d2e571e.png';
+    else if(cornerClickCount>=4){
+        if(!cornerImg.classList.contains('fullscreen')){
+            cornerImg.classList.add('fullscreen');
+            cornerImg.src='https://i.imgs.ovh/2026/06/29/56f95bd15d1ae9d7edc0d29713f4b5e3.png';
+            cornerScale=1;
+        }else{
+            cornerScale+=0.5;
+            cornerImg.style.transform=`scale(${cornerScale})`;
+            if(cornerScale>=5){ cornerImg.style.display='none'; document.body.style.background='#000'; showHiddenText('你躲不掉'); }
+        }
+    }
+});
+</script>
+</body>
+</html>
